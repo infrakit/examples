@@ -1,0 +1,74 @@
+{{/*
+
+Infrakit Groups Config
+
+This is a template JSON for managing two groups of instances - managers and workers - on AWS.
+To keep things simple, we use the metadata api on AWS to determine subnets and vpc ids.
+
+This is to support the use case where infrakit is running *inside* the cloud environment where
+the instances it manages reside.
+
+ */}}
+
+{{ source "common.ikt" }} {{/* a common template included here to define global variables */}}
+
+{{/* Local variables */}}
+
+{{ $swarmLeaderIP := "172.31.16.101" }}
+{{ $managerIPs := tuple $swarmLeaderIP "172.31.16.102" "172.31.16.103" }}
+
+{{ $workerSize := 3 }}
+{{ $dockerEngine := "unix:///var/run/docker.sock" }} {{/* for this flavor to connect to */}}
+
+{{ $managerInit := cat (ref "/cluster/config/urlRoot") "manager-init.sh" | nospace }}
+{{ $workerInit := cat (ref "/cluster/config/urlRoot") "worker-init.sh" | nospace }}
+
+{{ $myGroups := include "aws/groups.json" | from_json }}
+
+[
+    {
+        "Plugin": "group",
+        "Properties": {
+            "ID": "swarm-managers",
+            "Properties": {
+                "Allocation": {
+                    "LogicalIDs": {{ $managerIPs | to_json }}
+                },
+                "Flavor": {
+                    "Plugin": "flavor-swarm/manager",
+                    "Properties": {
+                        "InitScriptTemplateURL": "{{ $managerInit }}",
+                        "SwarmJoinIP": "{{ $swarmLeaderIP }}",
+                        "Docker" : {
+                            "Host" : "{{ $dockerEngine }}"
+                        }
+                    }
+                },
+                "Instance": {{ $myGroups.Managers | to_json }}
+            }
+        }
+    }
+    ,
+    {
+        "Plugin": "group",
+        "Properties": {
+            "ID": "swarm-workers",
+            "Properties": {
+                "Allocation": {
+                    "Size": {{ $workerSize }}
+                },
+                "Flavor": {
+                    "Plugin": "flavor-swarm/worker",
+                    "Properties": {
+                        "InitScriptTemplateURL": "{{ $workerInit }}",
+                        "SwarmJoinIP": "{{ $swarmLeaderIP }}",
+                        "Docker" : {
+                            "Host" : "{{ $dockerEngine }}"
+                        }
+                    }
+                },
+                "Instance": {{ $myGroups.Workers | to_json }}
+            }
+        }
+    }
+]
