@@ -1,0 +1,50 @@
+{{/*
+
+Config for workers on AWS
+
+*/}}
+{
+    "Plugin": "instance-aws",
+    "Properties": {
+        "Tags": {
+            "infrakit.clusterName": "{{ ref "/cluster/name" }}",
+            "infrakit.role" : "workers"
+        },
+        "RunInstancesInput": {
+            "BlockDeviceMappings": null,
+            "DisableApiTermination": null,
+            "EbsOptimized": null,
+            "IamInstanceProfile": null,
+            "ImageId": "{{ ref "/local/amiID" }}",
+            "InstanceInitiatedShutdownBehavior": null,
+            "InstanceType": "{{ ref "/local/instanceType" }}",
+            "KeyName": "{{ ref "/local/keyName" }}",
+            "NetworkInterfaces": [
+                {
+                    "AssociatePublicIpAddress": true,
+                    "DeleteOnTermination": true,
+                    "DeviceIndex": 0,
+                    "Groups": [
+                        "{{ ref "/local/securityGroupIDs" }}"
+                    ],
+                    "NetworkInterfaceId": null,
+                    "PrivateIpAddress": null,
+                    "PrivateIpAddresses": null,
+                    "SecondaryPrivateIpAddressCount": null,
+                    "SubnetId": "{{ ref "/local/subnetID" }}"
+                }
+            ],
+            "Placement": {
+                "Affinity": null,
+                "AvailabilityZone": "{{ ref "/local/availabilityZone" }}",
+                "Tenancy": null
+            },
+            "PrivateIpAddress": null,
+            "RamdiskId": null,
+            "SecurityGroupIds": null,
+            "SecurityGroups": null,
+            "SubnetId": null,
+            "UserData": null
+        }
+    }
+}

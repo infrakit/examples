@@ -1,0 +1,32 @@
+{{ source "common.ikt" }}
+
+{{ $logDir := cat (env "INFRAKIT_HOME") "/logs" | nospace }}
+
+[
+    {
+        "Plugin" : "manager",
+        "Launch" : {
+            "os": {
+                "Cmd" : "infrakit-manager --name group  --proxy-for-group group-stateless swarm  > {{$logDir}}/manager.log 2>&1"
+            }
+        }
+    }
+    ,
+    {
+        "Plugin" : "group-stateless",
+        "Launch" : {
+            "os": {
+                "Cmd" : "infrakit-group-default --poll-interval 5s --name group-stateless --log 5 > {{$logDir}}/group-stateless.log 2>&1"
+            }
+        }
+    }
+    ,
+    {
+        "Plugin" : "flavor-swarm",
+        "Launch" : {
+            "os" : {
+                "Cmd" : "infrakit-flavor-swarm --log 5 > {{$logDir}}/flavor-swarm.log 2>&1"
+            }
+        }
+    }
+]
