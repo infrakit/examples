@@ -20,6 +20,11 @@
             "Type" : "String",
             "Description" : "Private IP of the bootstrap node",
             "Default" : "172.31.16.101"
+        },
+        "BootScriptURL" : {
+            "Type" : "String",
+            "Description" : "URL of the boot script",
+            "Default" : "https://infrakit.github.io/examples/swarm/boot.sh"
         }
     },
 
@@ -39,6 +44,7 @@
     },
 
     "Mappings": {
+
         "VpcCidrs" : {
             "vpc" : {
                 "cidr": "172.31.0.0/16"
@@ -281,7 +287,7 @@
                             "apt-get update -y; apt-get install -y jq \n",
                             "wget -qO- https://get.docker.com/ | sh \n",
                             "docker swarm init --advertise-addr ", {"Ref": "BootstrapNodePrivateIP"}, "\n",
-                            "docker run --rm infrakit/devbundle:dev infrakit template --url https://chungers.github.io/infrakit-demos/swarm/boot.sh | sh \n"
+                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref" : "BootScriptURL"}," | sh \n"
                         ]]
                     }
                 },
