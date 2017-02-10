@@ -1,42 +1,21 @@
 #!/bin/bash
 
-{{ source "common.ikt" }}
-
 set -o errexit
 set -o nounset
 set -o xtrace
 
-{{/* Install Docker */}}
-{{ include "install-docker.sh" }}
+{{/* Before we call the common boot sequence, set a few variables */}}
 
-{{/* Set up infrakit */}}
-{{ include "infrakit.sh" }}
+{{ global "/cluster/swarm/initialized" SWARM_INITIALIZED }}
+{{ global "/cluster/swarm/join/ip" INSTANCE_LOGICAL_ID }}
 
-mkdir -p /etc/docker
-cat << EOF > /etc/docker/daemon.json
-{
-  "labels": {{ INFRAKIT_LABELS | to_json }}
-}
-EOF
+{{ global "/local/instance/volume/attach" true }}
+{{ global "/local/docker/engine/labels" INFRAKIT_LABELS }}
+{{ global "/local/docker/swarm/join/addr" SWARM_MANAGER_ADDR }}
+{{ global "/local/docker/swarm/join/token" SWARM_JOIN_TOKENS.Manager }}
 
-{{/* Reload the engine labels */}}
-kill -s HUP $(cat /var/run/docker.pid)
-sleep 5
+{{ global "/local/infrakit/role/manager" true }}
 
-
-{{ if and (eq INSTANCE_LOGICAL_ID SPEC.SwarmJoinIP) (not SWARM_INITIALIZED) }}
-
-  {{/* The first node of the special allocations will initialize the swarm. */}}
-  docker swarm init --advertise-addr {{ INSTANCE_LOGICAL_ID }}  # starts :2377
-
-{{ else }}
-
-  {{/* The rest of the nodes will join as followers in the manager group. */}}
-  docker swarm join --token {{ SWARM_JOIN_TOKENS.Manager }} {{ SWARM_MANAGER_ADDR }}
-
-{{ end }}
-
-{{/* infrakit boot */}}
 {{ include "boot.sh" }}
 
-# Append commands here to run other things...
+# Append commands here to run other things that makes sense for managers

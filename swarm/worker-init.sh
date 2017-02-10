@@ -1,24 +1,19 @@
 #!/bin/bash
 
-{{ source "common.ikt" }}
-
 set -o errexit
 set -o nounset
 set -o xtrace
 
-{{/* Install Docker */}}
-{{ include "install-docker.sh" }}
+{{/* Before we call the common boot sequence, set a few variables */}}
 
-mkdir -p /etc/docker
-cat << EOF > /etc/docker/daemon.json
-{
-  "labels": {{ INFRAKIT_LABELS | to_json }}
-}
-EOF
+{{ global "/cluster/swarm/initialized" SWARM_INITIALIZED }}
 
-# Tell engine to reload labels
-kill -s HUP $(cat /var/run/docker.pid)
+{{ global "/local/docker/engine/labels" INFRAKIT_LABELS }}
+{{ global "/local/docker/swarm/join/addr" SWARM_MANAGER_ADDR }}
+{{ global "/local/docker/swarm/join/token" SWARM_JOIN_TOKENS.Worker }}
 
-sleep 5
+{{ global "/local/infrakit/role/worker" true }}
 
-docker swarm join --token {{  SWARM_JOIN_TOKENS.Worker }} {{ SWARM_MANAGER_ADDR }}
+{{ include "boot.sh" }}
+
+# Append commands here to run other things that makes sense for workers

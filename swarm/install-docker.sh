@@ -1,16 +1,12 @@
 {{ source "common.ikt" }}
 
-{{ if ref "/cluster/install/docker" }}
-
 apt-get update -y
 apt-get upgrade -y
 apt-get install -y jq
 
 wget -qO- https://get.docker.com/ | sh
 
-sudo usermod -aG docker {{ ref "/compute/instance/user" }}
-
-{{ end }} {{/* if install */}}
+sudo usermod -aG docker {{ ref "/local/docker/user" }}
 
 # For Upstart ONLY (pre- Ubuntu 15.04)
 if [ -d "/var/log/upstart" ]; then
