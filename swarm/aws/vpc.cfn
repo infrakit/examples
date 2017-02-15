@@ -24,7 +24,7 @@
         "BootScriptURL" : {
             "Type" : "String",
             "Description" : "URL of the bootscript",
-            "Default" : "https://infrakit.github.io/examples/swarm/boot.sh"
+            "Default" : "https://chungers.github.io/infrakit-demos/swarm/boot.sh"
         }
     },
 
@@ -359,9 +359,7 @@
                         "Fn::Join" :
                         [ "", [
                             "#!/bin/sh \n",
-                            "apt-get update -y; apt-get install -y jq \n",
-                            "# -- DOCKER ON AMI ALREADY -- wget -qO- https://get.docker.com/ | sh \n",
-                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"}," | sh \n"
+                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"}," | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
                 },

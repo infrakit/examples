@@ -1,7 +1,7 @@
 {{/* Global variables */}}
 
 {{ global "/cluster/name" "infrakit-demos" }}
-{{ global "/cluster/config/urlRoot" "https://infrakit.github.io/examples/swarm/" }}
+{{ global "/cluster/config/urlRoot" "https://chungers.github.io/infrakit-demos/swarm/" }}
 {{ global "/cluster/config/groups.json" (cat (ref "/cluster/config/urlRoot") "groups.json" | nospace) }}
 {{ global "/cluster/swarm/join/ip" "172.31.16.101" }}
 {{ global "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
@@ -17,4 +17,4 @@
 {{ global "/infrakit/instance/docker/cmd" "infrakit-instance-aws --log 5" }}
 
 
-{{ if empty (ref "/local/docker/engine/labels") }}{{ global "/local/docker/engine/labels" (from_json "{}") }}{{end}}
+{{ if empty (ref "/local/docker/engine/labels") }}{{ global "/local/docker/engine/labels" (from_json "[]") }}{{end}}

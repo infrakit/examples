@@ -8,6 +8,12 @@ set -o xtrace
 # coupled to the AMI (host OS) used.
 EBS_DEVICE=/dev/xvdf
 
+# TODO - make this more robust - loop and check.  Right now just sleeps and hope for the best.
+if [ ! -b $EBS_DEVICE ]; then
+    echo "Device $EBS_DEVICE not ready. Waiting"
+    sleep 30
+fi
+
 # Determine whether the EBS volume needs to be formatted.
 if [ "$(file -sL $EBS_DEVICE)" = "$EBS_DEVICE: data" ]
 then
