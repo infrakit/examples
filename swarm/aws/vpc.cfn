@@ -24,7 +24,7 @@
         "BootScriptURL" : {
             "Type" : "String",
             "Description" : "URL of the bootscript",
-            "Default" : "https://chungers.github.io/infrakit-demos/swarm/boot.sh"
+            "Default" : "https://infrakit.github.io/examples/swarm/boot.sh"
         }
     },
 
