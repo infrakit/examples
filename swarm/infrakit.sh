@@ -23,13 +23,17 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 {{ $instanceCmd := ref "/infrakit/instance/docker/cmd" }}
 
 echo "Starting up infrakit"
-
-docker run -d --restart always --name infrakit \
+docker run -d --restart always --name manager \
        {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
-       infrakit plugin start --wait --config-url {{$pluginsURL}} --exec os --log 5 \
-       manager \
-       group-stateless \
-       flavor-swarm
+       infrakit-manager --name group  --proxy-for-group group-stateless swarm
+
+docker run -d --restart always --name group-stateless \
+       {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
+       infrakit-group-default --poll-interval 5s --name group-stateless
+
+docker run -d --restart always --name flavor-swarm \
+       {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
+       infrakit-flavor-swarm --log 5
 
 echo "Starting up instance-aws plugin"
 docker run -d --restart always --name instance-plugin \
