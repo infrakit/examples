@@ -34,17 +34,14 @@ sleep 5
 docker swarm init --advertise-addr {{ ref "/cluster/swarm/join/ip" }}  # starts :2377
 {{ end }}
 
-
 ##### Infrakit Services  #########################################################
 
 {{ if not (ref "/local/infrakit/role/worker") }}
 {{ include "infrakit.sh" }}
 {{ end }}{{/* if running infrakit */}}
 
-{{ if ref "/cluster/swarm/initialized" }}
-
-
 ##### Joining Swarm  #############################################################
+{{ if ref "/cluster/swarm/initialized" }}
 sleep 5
 echo "Joining swarm"
 docker swarm join --token {{ ref "/local/docker/swarm/join/token" }} {{ ref "/local/docker/swarm/join/addr" }}
