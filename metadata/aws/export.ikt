@@ -31,4 +31,4 @@ AWS specific - This is where we introspect the environment and export the values
 
 {{ $cfn := cfn stackName }}
 {{ export "cfn/stack" stackName }}
-{{ export "cfn/config", $cfn }}
+{{ export "cfn/config" $cfn }}
