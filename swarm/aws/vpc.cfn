@@ -359,7 +359,9 @@
                         "Fn::Join" :
                         [ "", [
                             "#!/bin/sh \n",
-                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"}," | tee /var/lib/infrakit.boot | sh \n"
+                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"},
+                            " --global /cluster/name=", {"Ref":"AWS::StackName"},
+                            " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
                 },
