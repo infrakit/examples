@@ -24,6 +24,12 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 {{ $instanceCmd := ref "/infrakit/instance/docker/cmd" }}
 {{ $metadataCmd := ref "/infrakit/metadata/docker/cmd" }}
 
+echo "Starting up metadata plugin"
+docker run -d --restart always --name metadata \
+       {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
+
+sleep 5
+
 echo "Starting up infrakit"
 docker run -d --restart always --name manager \
        {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
@@ -40,10 +46,6 @@ docker run -d --restart always --name flavor-swarm \
 echo "Starting up instance-aws plugin"
 docker run -d --restart always --name instance-plugin \
        {{$dockerMounts}} {{$dockerEnvs}} {{$instanceImage}} {{$instanceCmd}}
-
-echo "Starting up metadata plugin"
-docker run -d --restart always --name metadata \
-       {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
 
 # Need a bit of time for the leader to discover itself
 sleep 10
