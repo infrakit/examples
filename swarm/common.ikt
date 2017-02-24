@@ -1,10 +1,15 @@
 {{/* Global variables */}}
 
+{{ global "/cluster/name" "infrakit-demos" }}
 {{ global "/cluster/config/urlRoot" "https://chungers.github.io/examples/swarm/" }}
 {{ global "/infrakit/docker/image" "infrakit/devbundle:dev" }}
 {{ global "/infrakit/instance/docker/image" "infrakit/aws:dev" }}
+{{ global "/infrakit/metadata/docker/image" "infrakit/aws:dev" }}
 
-{{ global "/cluster/name" "infrakit-demos" }}
+{{ $stackName := "if11" }}
+{{ global "/infrakit/instance/docker/cmd" (cat "infrakit-instance-aws --log 5 --namespace-tags infrakit.scope=" $stackName | nospace) }}
+{{ global "/infrakit/metadata/docker/cmd" (cat "infrakit-metadata-aws --name var --template-url https://chungers.github.com/examples/metadata/aws/export.ikt --stack" $tackName) }}
+
 {{ global "/cluster/config/groups.json" (cat (ref "/cluster/config/urlRoot") "groups.json" | nospace) }}
 {{ global "/cluster/swarm/join/ip" "172.31.16.101" }}
 {{ global "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
@@ -15,6 +20,5 @@
 {{ global "/infrakit/docker/options/mount" (cat "-v /var/run/docker.sock:/var/run/docker.sock -v" (cat (ref "/infrakit/home") ":/infrakit/" | nospace)) }}
 {{ global "/infrakit/docker/options/env" "-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins" }}
 
-{{ global "/infrakit/instance/docker/cmd" "infrakit-instance-aws --log 5" }}
 
 {{ if empty (ref "/local/docker/engine/labels") }}{{ global "/local/docker/engine/labels" (from_json "[]") }}{{end}}
