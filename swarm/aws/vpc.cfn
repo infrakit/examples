@@ -405,8 +405,16 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "Bootstrap" ] ] }
                     },
                     {
+                        "Key" : "infrakit.scope",
+                        "Value" : {"Ref":"AWS::StackName"}
+                    },
+                    {
                         "Key" : "infrakit.group",
                         "Value" : "swarm-managers"
+                    },
+                    {
+                        "Key" : "infrakit.config_sha",
+                        "Value" : "bootstrap"
                     },
                     {
                         "Key" : "infrakit.role",
