@@ -388,7 +388,8 @@
                             "#!/bin/sh \n",
                             "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"},
                             " --global /cluster/name=", {"Ref":"AWS::StackName"},
-                            " --global /cluster/name=", {"Ref":"MetadataExportTemplate"},
+                            " --global /cluster/config/bootURL=", {"Ref":"BootScriptURL"},
+                            " --global /cluster/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                             " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
