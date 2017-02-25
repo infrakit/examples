@@ -4,9 +4,9 @@
 {{ metadata "var/export/cfn/stack" | global "/cluster/name" }}
 {{ metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" | global "/cluster/swarm/size" }}
 {{ metadata "var/export/cfn/config/Parameters/BootScriptURL/ParameterValue" | global "/cluster/config/bootURL" }}
-{{ metadata "var/export/cfn/config/Parameters/InfrakitCoreDockerImage/ParameterValue" | global "/infrakit/docker/image" }}
-{{ metadata "var/export/cfn/config/Parameters/InfrakitInstanceDockerImage/ParameterValue" | global "/infrakit/instance/docker/image" }}
-{{ metadata "var/export/cfn/config/Parameters/InfrakitMetadataDockerImage/ParameterValue" | global "/infrakit/metadata/docker/image" }}
+{{ metadata "var/export/cfn/config/Parameters/InfrakitCore/ParameterValue" | global "/infrakit/docker/image" }}
+{{ metadata "var/export/cfn/config/Parameters/InfrakitInstancePlugin/ParameterValue" | global "/infrakit/instance/docker/image" }}
+{{ metadata "var/export/cfn/config/Parameters/InfrakitMetadataPlugin/ParameterValue" | global "/infrakit/metadata/docker/image" }}
 
 
 {{ global "/cluster/config/urlRoot" (ref "/cluster/config/bootURL" | dir )}}

@@ -37,17 +37,17 @@
             "Description" : "URL to configure the metadata plugin",
             "Default" : "https://chungers.github.io/examples/metadata/aws/export.ikt"
         },
-        "InfrakitCoreDockerImage" : {
+        "InfrakitCore" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit",
             "Default" : "infrakit/devbundle:dev"
         },
-        "InfrakitInstanceDockerImage" : {
+        "InfrakitInstancePlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS instance plugin",
             "Default" : "infrakit/aws:dev"
         },
-        "InfrakitMetadataDockerImage" : {
+        "InfrakitMetadataPlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS metadata plugin",
             "Default" : "infrakit/aws:dev"
@@ -59,12 +59,13 @@
             "ParameterGroups" : [
                 {
                     "Label" : { "default":"Cluster Properties" },
-                    "Parameters" : [ "InstanceType", "KeyName" ]
+                    "Parameters" : [ "InstanceType", "KeyName", "ClusterSize" ]
                 }
             ],
             "ParameterLabels" : {
                 "InstanceType" : { "default" : "Agent worker instance type?" },
-                "KeyName" : { "default" : "Which SSH key to use?" }
+                "KeyName" : { "default" : "Which SSH key to use?" },
+                "ClusterSize" : { "default" : "How many nodes in the cluster?" }
             }
         }
     },
