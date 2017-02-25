@@ -22,7 +22,7 @@ the instances it manages reside.
 {{ $managerInit := cat (ref "/infrakit/config/root") "/manager-init.sh" | nospace }}
 {{ $workerInit := cat (ref "/infrakit/config/root") "/worker-init.sh" | nospace }}
 
-{{ $myGroups := include "aws/groups.json" | from_json }}
+{{ $myGroups := include (cat (ref "/cluster/provider") "/groups.json" | nospace) | from_json }}
 
 [
     {

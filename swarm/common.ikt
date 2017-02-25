@@ -1,5 +1,6 @@
 {{/* Global variables */}}
 
+{{ global "/cluster/provider" "aws" }}
 {{ global "/cluster/swarm/join/ip" "172.31.16.101" }}
 {{ global "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
 {{ global "/local/install/docker" false }}
