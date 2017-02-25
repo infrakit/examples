@@ -3,12 +3,6 @@
 
 {{ global "/cluster/config/urlRoot" (ref "/cluster/config/bootURL" | dir )}}
 
-{{ $stackName := ref "/cluster/name" }}
-{{ $metadataExportUrl := metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" }}
-
-{{ global "/infrakit/instance/docker/cmd" (cat "infrakit-instance-aws --log 5 --namespace-tags" (cat "infrakit.scope=" $stackName | nospace)) }}
-{{ global "/infrakit/metadata/docker/cmd" (cat "infrakit-metadata-aws --name var --template-url" $metadataExportUrl "--stack" $stackName) }}
-
 {{ global "/cluster/config/groups.json" (cat (ref "/cluster/config/urlRoot") "groups.json" | nospace) }}
 {{ global "/cluster/swarm/join/ip" "172.31.16.101" }}
 {{ global "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
