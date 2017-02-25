@@ -7,31 +7,9 @@ mkdir -p {{$infrakitHome}}/configs
 mkdir -p {{$infrakitHome}}/logs
 mkdir -p {{$infrakitHome}}/plugins
 
+{{ $dockerImage := ref "/infrakit/docker/image" }}
 {{ $dockerMounts := ref "/infrakit/docker/options/mount" }}
 {{ $dockerEnvs := ref "/infrakit/docker/options/env" }}
-
-{{ $stackName := ref "/cluster/name" }}
-{{ $metadataExportUrl := ref "/cluster/metadata/configURL" }}
-{{ $metadataImage := ref "/infrakit/metadata/docker/image" }}
-{{ $metadataCmd := (cat "infrakit-metadata-aws --name var --template-url" $metadataExportUrl "--stack" $stackName) }}
-
-{{ if not ref "/cluster/metadata/running" }}
-echo "Starting up metadata plugin"
-docker run -d --restart always --name metadata \
-       {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
-sleep 5
-{{ end }}
-
-{{/* integration with the metadata plugin here -- note the values here are from the cloudformation metadata */}}
-{{ metadata "var/export/cfn/stack" | global "/cluster/name" }}
-{{ metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" | global "/cluster/swarm/size" }}
-{{ metadata "var/export/cfn/config/Parameters/BootScriptURL/ParameterValue" | global "/cluster/config/bootURL" }}
-{{ metadata "var/export/cfn/config/Parameters/InfrakitCore/ParameterValue" | global "/infrakit/docker/image" }}
-{{ metadata "var/export/cfn/config/Parameters/InfrakitInstancePlugin/ParameterValue" | global "/infrakit/instance/docker/image" }}
-{{ metadata "var/export/cfn/config/Parameters/InfrakitMetadataPlugin/ParameterValue" | global "/infrakit/metadata/docker/image" }}
-{{ metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" | global "/cluster/metadata/configURL" }}
-
-{{ $dockerImage := ref "/infrakit/docker/image" }}
 
 echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'" >> /root/.bashrc
 
@@ -40,6 +18,10 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 {{ $pluginsURL := cat (ref "/cluster/config/urlRoot") "/plugins.json" | nospace }}
 {{ $groupsURL := cat (ref "/cluster/config/urlRoot") "/groups.json" | nospace }}
 
+{{ $stackName := ref "/cluster/name" }}
+{{ $metadataExportUrl := ref "/cluster/metadata/configURL" }}
+{{ $metadataImage := ref "/infrakit/metadata/docker/image" }}
+{{ $metadataCmd := (cat "infrakit-metadata-aws --name var --template-url" $metadataExportUrl "--stack" $stackName) }}
 {{ $instanceImage := ref "/infrakit/instance/docker/image" }}
 {{ $instanceCmd := (cat "infrakit-instance-aws --log 5 --namespace-tags" (cat "infrakit.scope=" $stackName | nospace)) }}
 
@@ -57,9 +39,13 @@ docker run -d --restart always --name flavor-swarm \
        {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
        infrakit-flavor-swarm --log 5
 
-echo "Starting up instance-aws plugin"
+echo "Starting up instance plugin"
 docker run -d --restart always --name instance-plugin \
        {{$dockerMounts}} {{$dockerEnvs}} {{$instanceImage}} {{$instanceCmd}}
+
+echo "Starting up metadata plugin"
+docker run -d --restart always --name metadata \
+       {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
 
 # Need a bit of time for the leader to discover itself
 sleep 10

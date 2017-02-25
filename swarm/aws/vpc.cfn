@@ -386,16 +386,14 @@
                         "Fn::Join" :
                         [ "", [
                             "#!/bin/sh \n",
-                            "mkdir -p /root/infrakit \n",
-                            "docker run -d --restart always ",
-                               " --name metadata -v /root/infrakit:/infrakit ",{"Ref":"InfrakitMetadataPlugin"},
-                               " infrakit-metadata-aws --name var --template-url ", {"Ref":"MetadataExportTemplate"},
-                               " --stack ", {"Ref":"AWS::StackName"}, "\n",
                             "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"},
                                " --global /cluster/name=", {"Ref":"AWS::StackName"},
+                               " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},
                                " --global /cluster/config/bootURL=", {"Ref":"BootScriptURL"},
+                               " --global /infrakit/docker/image=", {"Ref":"InfrakitCore"},
+                               " --global /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
+                               " --global /infrakit/metadata/docker/image=", {"Ref":"InfrakitMetadataPlugin"},
                                " --global /cluster/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
-                               " --global /cluster/metadata/running=true",
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }

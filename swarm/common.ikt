@@ -15,3 +15,17 @@
 
 
 {{ if empty (ref "/local/docker/engine/labels") }}{{ global "/local/docker/engine/labels" (from_json "[]") }}{{end}}
+
+{{/*
+Integration with the metadata plugin here -- note the values here are from the cloudformation metadata
+if not available, we expect to come from command line or some other means -- see vpc.cfn boostrap node's userdata
+*/}}
+{{ if metadata "var/available" }}
+{{ global "/cluster/name"                   ( metadata "var/export/cfn/stack" )}}
+{{ global "/cluster/swarm/size"             ( metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
+{{ global "/cluster/config/bootURL"         ( metadata "var/export/cfn/config/Parameters/BootScriptURL/ParameterValue" )}}
+{{ global "/infrakit/docker/image"          ( metadata "var/export/cfn/config/Parameters/InfrakitCore/ParameterValue" )}}
+{{ global "/infrakit/instance/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitInstancePlugin/ParameterValue" )}}
+{{ global "/infrakit/metadata/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitMetadataPlugin/ParameterValue" )}}
+{{ global "/cluster/metadata/configURL"     ( metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
+{{ end }}
