@@ -15,11 +15,12 @@ mkdir -p {{$infrakitHome}}/plugins
 {{ $metadataImage := ref "/infrakit/metadata/docker/image" }}
 {{ $metadataCmd := (cat "infrakit-metadata-aws --name var --template-url" $metadataExportUrl "--stack" $stackName) }}
 
+{{ if not ref "/cluster/metadata/running" }}
 echo "Starting up metadata plugin"
 docker run -d --restart always --name metadata \
        {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
-
 sleep 5
+{{ end }}
 
 {{/* integration with the metadata plugin here -- note the values here are from the cloudformation metadata */}}
 {{ metadata "var/export/cfn/stack" | global "/cluster/name" }}
