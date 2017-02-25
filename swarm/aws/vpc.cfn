@@ -27,10 +27,10 @@
             "Description" : "Private IP of the bootstrap node",
             "Default" : "172.31.16.101"
         },
-        "BootScriptURL" : {
+        "InfrakitConfigRoot" : {
             "Type" : "String",
-            "Description" : "URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/swarm/boot.sh"
+            "Description" : "Root URL of the bootscript",
+            "Default" : "https://chungers.github.io/examples/swarm"
         },
         "MetadataExportTemplate" : {
             "Type" : "String",
@@ -386,14 +386,15 @@
                         "Fn::Join" :
                         [ "", [
                             "#!/bin/sh \n",
-                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"},
+                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",
+                               {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --global /cluster/name=", {"Ref":"AWS::StackName"},
                                " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},
-                               " --global /cluster/config/bootURL=", {"Ref":"BootScriptURL"},
+                               " --global /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --global /infrakit/docker/image=", {"Ref":"InfrakitCore"},
                                " --global /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
                                " --global /infrakit/metadata/docker/image=", {"Ref":"InfrakitMetadataPlugin"},
-                               " --global /cluster/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
+                               " --global /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }

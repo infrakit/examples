@@ -15,15 +15,13 @@ echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$docke
 
 alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'
 
-{{ $pluginsURL := cat (ref "/cluster/config/urlRoot") "/plugins.json" | nospace }}
-{{ $groupsURL := cat (ref "/cluster/config/urlRoot") "/groups.json" | nospace }}
-
 {{ $stackName := ref "/cluster/name" }}
-{{ $metadataExportUrl := ref "/cluster/metadata/configURL" }}
+{{ $metadataExportUrl := ref "/infrakit/metadata/configURL" }}
 {{ $metadataImage := ref "/infrakit/metadata/docker/image" }}
 {{ $metadataCmd := (cat "infrakit-metadata-aws --name var --template-url" $metadataExportUrl "--stack" $stackName) }}
 {{ $instanceImage := ref "/infrakit/instance/docker/image" }}
 {{ $instanceCmd := (cat "infrakit-instance-aws --log 5 --namespace-tags" (cat "infrakit.scope=" $stackName | nospace)) }}
+{{ $groupsURL := cat (ref "/infrakit/config/root") "/groups.json" | nospace }}
 
 
 echo "Starting up infrakit"
