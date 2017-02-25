@@ -16,7 +16,7 @@ the instances it manages reside.
 {{ $swarmLeaderIP := ref "/cluster/swarm/join/ip" }}
 {{ $managerIPs := ref "/cluster/swarm/manager/ips" }}
 
-{{ $workerSize := 3 }}
+{{ $workerSize := sub (ref "/cluster/swarm/size") (len $managerIPs) }}
 {{ $dockerEngine := "unix:///var/run/docker.sock" }} {{/* for this flavor to connect to */}}
 
 {{ $managerInit := cat (ref "/cluster/config/urlRoot") "manager-init.sh" | nospace }}

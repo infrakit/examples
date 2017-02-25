@@ -1,14 +1,21 @@
 {{/* Global variables */}}
 
-{{/* global "/cluster/name" "infrakit-demos" */}}
-{{ global "/cluster/config/urlRoot" "https://chungers.github.io/examples/swarm/" }}
-{{ global "/infrakit/docker/image" "infrakit/devbundle:dev" }}
-{{ global "/infrakit/instance/docker/image" "infrakit/aws:dev" }}
-{{ global "/infrakit/metadata/docker/image" "infrakit/aws:dev" }}
+{{/* integration with the metadata plugin here -- note the values here are from the cloudformation metadata */}}
+{{ metadata "var/export/cfn/stack" | global "/cluster/name" }}
+{{ metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" | global "/cluster/swarm/size" }}
+{{ metadata "var/export/cfn/config/Parameters/BootScriptURL/ParameterValue" | global "/cluster/config/bootURL" }}
+{{ metadata "var/export/cfn/config/Parameters/InfrakitCoreDockerImage/ParameterValue" | global "/infrakit/docker/image" }}
+{{ metadata "var/export/cfn/config/Parameters/InfrakitInstanceDockerImage/ParameterValue" | global "/infrakit/instance/docker/image" }}
+{{ metadata "var/export/cfn/config/Parameters/InfrakitMetadataDockerImage/ParameterValue" | global "/infrakit/metadata/docker/image" }}
+
+
+{{ global "/cluster/config/urlRoot" (ref "/cluster/config/bootURL" | dir )}}
 
 {{ $stackName := ref "/cluster/name" }}
+{{ $metadataExportUrl := metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" }}
+
 {{ global "/infrakit/instance/docker/cmd" (cat "infrakit-instance-aws --log 5 --namespace-tags" (cat "infrakit.scope=" $stackName | nospace)) }}
-{{ global "/infrakit/metadata/docker/cmd" (cat "infrakit-metadata-aws --name var --template-url https://chungers.github.com/examples/metadata/aws/export.ikt --stack" $stackName) }}
+{{ global "/infrakit/metadata/docker/cmd" (cat "infrakit-metadata-aws --name var --template-url" $metadataExportUrl "--stack" $stackName) }}
 
 {{ global "/cluster/config/groups.json" (cat (ref "/cluster/config/urlRoot") "groups.json" | nospace) }}
 {{ global "/cluster/swarm/join/ip" "172.31.16.101" }}
