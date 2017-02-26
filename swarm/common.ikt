@@ -24,5 +24,5 @@ if not available, we expect to come from command line or some other means -- see
 {{ global "/infrakit/metadata/configURL"    ( metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
 {{ end }}
 
-{{ global "/local/install/docker" (ref "/provider/image/hasDocker" | default "0" | eq "0" ) }}
+{{ global "/local/install/docker" (ref "/provider/image/hasDocker" | default "no" | eq "no" ) }}
 {{ global "/local/docker/user" "ubuntu" }}
