@@ -3,6 +3,13 @@
     "Description": "InfraKit VPC Builder",
 
     "Parameters": {
+        "PreinstalledDockerAMI": {
+            "Description": "1 to use AMI that has Docker; 0 to install the latest from get.docker.com",
+            "Type": "Number",
+            "MinValue": "0",
+            "MaxValue": "1",
+	    "Default": "1"
+        },
         "ClusterSize": {
             "Description": "Size of the cluster",
             "Type": "Number",
@@ -128,6 +135,15 @@
             "us-west-2": {
                 "HVM64": "ami-5659dc36",
                 "HVMG2": "NOT_SUPPORTED"
+            }
+        },
+
+        "AMISelector" : {
+            "0" : {
+               "ami" : "AWSRegionArch2AMIUbuntu14NoDocker"
+            },
+            "1" : {
+               "ami" : "AWSRegionArch2AMI"
             }
         }
     },
@@ -375,11 +391,11 @@
                 ],
                 "AvailabilityZone" : { "Fn::GetAtt" : [ "Subnet1", "AvailabilityZone" ] },
                 "ImageId" : {
-                    "Fn::FindInMap": ["AWSRegionArch2AMI", {
-                        "Ref": "AWS::Region"
-                    }, {
-                        "Fn::FindInMap": ["AWSInstanceType2Arch", {"Ref" : "InstanceType"}, "Arch"]
-                    }]
+                    "Fn::FindInMap": [
+                        { "Fn::FindInMap" : [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "ami" ] },
+                        { "Ref": "AWS::Region" },
+                        { "Fn::FindInMap": ["AWSInstanceType2Arch", {"Ref" : "InstanceType"}, "Arch"]}
+                    ]
                 },
                 "UserData" : {
                     "Fn::Base64" : {
@@ -390,6 +406,7 @@
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --global /cluster/name=", {"Ref":"AWS::StackName"},
                                " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},
+                               " --global /provider/image/hasDocker=", {"Ref":"PreinstalledDockerAMI"},
                                " --global /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --global /infrakit/docker/image=", {"Ref":"InfrakitCore"},
                                " --global /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
