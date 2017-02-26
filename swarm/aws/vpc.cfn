@@ -140,10 +140,12 @@
 
         "AMISelector" : {
             "0" : {
-               "ami" : "AWSRegionArch2AMIUbuntu14NoDocker"
+                "ami" : "AWSRegionArch2AMIUbuntu14NoDocker",
+                "userdata" : "wget -qO- https://get.docker.com/ | sh \n"
             },
             "1" : {
-               "ami" : "AWSRegionArch2AMI"
+                "ami" : "AWSRegionArch2AMI",
+                "userdata" : "# not installing docker \n"
             }
         }
     },
@@ -307,7 +309,7 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "EBS" ] ] }
                     },
                     {
-                        "Key" : "infrakit.cluster",
+                        "Key" : "infrakit.scope",
                         "Value" : {"Ref": "AWS::StackName"}
                     },
                     {
@@ -329,7 +331,7 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "EBS" ] ] }
                     },
                     {
-                        "Key" : "infrakit.cluster",
+                        "Key" : "infrakit.scope",
                         "Value" : {"Ref": "AWS::StackName"}
                     },
                     {
@@ -351,7 +353,7 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "EBS" ] ] }
                     },
                     {
-                        "Key" : "infrakit.cluster",
+                        "Key" : "infrakit.scope",
                         "Value" : {"Ref": "AWS::StackName"}
                     },
                     {
@@ -402,11 +404,14 @@
                         "Fn::Join" :
                         [ "", [
                             "#!/bin/sh \n",
+                            {
+                                "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
+                            },
                             "docker run --rm infrakit/devbundle:dev infrakit template --url ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --global /cluster/name=", {"Ref":"AWS::StackName"},
                                " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},
-                               " --global /provider/image/hasDocker=", {"Ref":"PreinstalledDockerAMI"},
+                               " --global /provider/image/hasDocker=1",
                                " --global /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --global /infrakit/docker/image=", {"Ref":"InfrakitCore"},
                                " --global /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},

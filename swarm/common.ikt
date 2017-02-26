@@ -25,3 +25,4 @@ if not available, we expect to come from command line or some other means -- see
 {{ end }}
 
 {{ global "/local/install/docker" (ref "/provider/image/hasDocker" | default "0" | eq "0" ) }}
+{{ global "/local/docker/user" "ubuntu" }}
