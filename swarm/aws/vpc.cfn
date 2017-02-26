@@ -4,11 +4,10 @@
 
     "Parameters": {
         "PreinstalledDockerAMI": {
-            "Description": "1 to use AMI that has Docker; 0 to install the latest from get.docker.com",
-            "Type": "Number",
-            "MinValue": "0",
-            "MaxValue": "1",
-            "Default": "1"
+            "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
+            "Type": "String",
+            "AllowedValues" : [ "yes","no" ],
+            "Default": "yes"
         },
         "ClusterSize": {
             "Description": "Size of the cluster",
@@ -47,17 +46,17 @@
         "InfrakitCore" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit",
-            "Default" : "infrakit/devbundle:dev"
+            "Default" : "infrakit/devbundle:0.4.1"
         },
         "InfrakitInstancePlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS instance plugin",
-            "Default" : "infrakit/aws:dev"
+            "Default" : "infrakit/aws:0.4.1"
         },
         "InfrakitMetadataPlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS metadata plugin",
-            "Default" : "infrakit/aws:dev"
+            "Default" : "infrakit/aws:0.4.1"
         }
     },
 
@@ -139,11 +138,11 @@
         },
 
         "AMISelector" : {
-            "0" : {
+            "no" : {
                 "ami" : "AWSRegionArch2AMIUbuntu14NoDocker",
                 "userdata" : "wget -qO- https://get.docker.com/ | sh \n"
             },
-            "1" : {
+            "yes" : {
                 "ami" : "AWSRegionArch2AMI",
                 "userdata" : "# not installing docker \n"
             }
