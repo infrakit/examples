@@ -410,7 +410,7 @@
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --global /cluster/name=", {"Ref":"AWS::StackName"},
                                " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},
-                               " --global /provider/image/hasDocker=1",
+                               " --global /provider/image/hasDocker=yes",
                                " --global /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --global /infrakit/docker/image=", {"Ref":"InfrakitCore"},
                                " --global /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
