@@ -1,20 +1,28 @@
 {{/* Global variables */}}
 
-{{ global "/cluster/name" "infrakit-demos" }}
-{{ global "/cluster/config/urlRoot" "https://infrakit.github.io/examples/swarm/" }}
-{{ global "/cluster/config/groups.json" (cat (ref "/cluster/config/urlRoot") "groups.json" | nospace) }}
+{{ global "/cluster/provider" "aws" }}
 {{ global "/cluster/swarm/join/ip" "172.31.16.101" }}
 {{ global "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
+{{ if empty (ref "/local/docker/engine/labels") }}{{ global "/local/docker/engine/labels" (from_json "[]") }}{{end}}
 
-{{ global "/local/install/docker" false }}
-
-{{ global "/infrakit/home" "/root/infrakit" }}
-{{ global "/infrakit/docker/image" "infrakit/devbundle:0.3.1" }}
+{{ global "/infrakit/home" "/infrakit" }}
 {{ global "/infrakit/docker/options/mount" (cat "-v /var/run/docker.sock:/var/run/docker.sock -v" (cat (ref "/infrakit/home") ":/infrakit/" | nospace)) }}
 {{ global "/infrakit/docker/options/env" "-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins" }}
 
-{{ global "/infrakit/instance/docker/image" "infrakit/aws:0.3.0" }}
-{{ global "/infrakit/instance/docker/cmd" "infrakit-instance-aws --log 5" }}
+{{/*
+Integration with the metadata plugin here -- note the values here are from the cloudformation metadata
+if not available, we expect to come from command line or some other means -- see vpc.cfn boostrap node's userdata
+*/}}
+{{ if metadata "var" }}
+{{ global "/cluster/name"                   ( metadata "var/export/cfn/stack" )}}
+{{ global "/cluster/swarm/size"             ( metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
+{{ global "/provider/image/hasDocker"       ( metadata "var/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
+{{ global "/infrakit/config/root"           ( metadata "var/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
+{{ global "/infrakit/docker/image"          ( metadata "var/export/cfn/config/Parameters/InfrakitCore/ParameterValue" )}}
+{{ global "/infrakit/instance/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitInstancePlugin/ParameterValue" )}}
+{{ global "/infrakit/metadata/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitMetadataPlugin/ParameterValue" )}}
+{{ global "/infrakit/metadata/configURL"    ( metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
+{{ end }}
 
-
-{{ if empty (ref "/local/docker/engine/labels") }}{{ global "/local/docker/engine/labels" (from_json "[]") }}{{end}}
+{{ global "/local/install/docker" (ref "/provider/image/hasDocker" | default "0" | eq "0" ) }}
+{{ global "/local/docker/user" "ubuntu" }}

@@ -15,12 +15,17 @@ echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$docke
 
 alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'
 
+{{ $stackName := ref "/cluster/name" }}
 
-{{ $pluginsURL := cat (ref "/cluster/config/urlRoot") "/plugins.json" | nospace }}
-{{ $groupsURL := cat (ref "/cluster/config/urlRoot") "/groups.json" | nospace }}
+{{ $metadataExportUrl := ref "/infrakit/metadata/configURL" }}
+{{ $metadataImage := ref "/infrakit/metadata/docker/image" }}
+{{ $metadataCmd := (cat "metadata --name var --template-url" $metadataExportUrl "--stack" $stackName) }}
 
 {{ $instanceImage := ref "/infrakit/instance/docker/image" }}
-{{ $instanceCmd := ref "/infrakit/instance/docker/cmd" }}
+{{ $instanceCmd := (cat "instance --log 5 --namespace-tags" (cat "infrakit.scope=" $stackName | nospace)) }}
+
+{{ $groupsURL := cat (ref "/infrakit/config/root") "/groups.json" | nospace }}
+
 
 echo "Starting up infrakit"
 docker run -d --restart always --name manager \
@@ -35,9 +40,13 @@ docker run -d --restart always --name flavor-swarm \
        {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
        infrakit-flavor-swarm --log 5
 
-echo "Starting up instance-aws plugin"
+echo "Starting up instance plugin"
 docker run -d --restart always --name instance-plugin \
        {{$dockerMounts}} {{$dockerEnvs}} {{$instanceImage}} {{$instanceCmd}}
+
+echo "Starting up metadata plugin"
+docker run -d --restart always --name metadata \
+       {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
 
 # Need a bit of time for the leader to discover itself
 sleep 10

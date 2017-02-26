@@ -1,8 +1,21 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "InfraKit VPC Builder",
+    "Description": "InfraKit Demo - builds a new VPC with a Docker Swarm",
 
     "Parameters": {
+        "PreinstalledDockerAMI": {
+            "Description": "1 to use AMI that has Docker; 0 to install the latest from get.docker.com",
+            "Type": "Number",
+            "MinValue": "0",
+            "MaxValue": "1",
+            "Default": "1"
+        },
+        "ClusterSize": {
+            "Description": "Size of the cluster",
+            "Type": "Number",
+            "MinValue": "3",
+            "MaxValue": "10"
+        },
         "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
             "Type": "AWS::EC2::KeyPair::KeyName",
@@ -21,10 +34,30 @@
             "Description" : "Private IP of the bootstrap node",
             "Default" : "172.31.16.101"
         },
-        "BootScriptURL" : {
+        "InfrakitConfigRoot" : {
             "Type" : "String",
-            "Description" : "URL of the bootscript",
-            "Default" : "https://infrakit.github.io/examples/swarm/boot.sh"
+            "Description" : "Root URL of the bootscript",
+            "Default" : "https://chungers.github.io/examples/swarm"
+        },
+        "MetadataExportTemplate" : {
+            "Type" : "String",
+            "Description" : "URL to configure the metadata plugin",
+            "Default" : "https://chungers.github.io/examples/metadata/aws/export.ikt"
+        },
+        "InfrakitCore" : {
+            "Type" : "String",
+            "Description" : "Docker image of Infrakit",
+            "Default" : "infrakit/devbundle:dev"
+        },
+        "InfrakitInstancePlugin" : {
+            "Type" : "String",
+            "Description" : "Docker image of Infrakit AWS instance plugin",
+            "Default" : "infrakit/aws:dev"
+        },
+        "InfrakitMetadataPlugin" : {
+            "Type" : "String",
+            "Description" : "Docker image of Infrakit AWS metadata plugin",
+            "Default" : "infrakit/aws:dev"
         }
     },
 
@@ -33,12 +66,13 @@
             "ParameterGroups" : [
                 {
                     "Label" : { "default":"Cluster Properties" },
-                    "Parameters" : [ "InstanceType", "KeyName" ]
+                    "Parameters" : [ "InstanceType", "KeyName", "ClusterSize" ]
                 }
             ],
             "ParameterLabels" : {
                 "InstanceType" : { "default" : "Agent worker instance type?" },
-                "KeyName" : { "default" : "Which SSH key to use?" }
+                "KeyName" : { "default" : "Which SSH key to use?" },
+                "ClusterSize" : { "default" : "How many nodes in the cluster?" }
             }
         }
     },
@@ -101,6 +135,17 @@
             "us-west-2": {
                 "HVM64": "ami-5659dc36",
                 "HVMG2": "NOT_SUPPORTED"
+            }
+        },
+
+        "AMISelector" : {
+            "0" : {
+                "ami" : "AWSRegionArch2AMIUbuntu14NoDocker",
+                "userdata" : "wget -qO- https://get.docker.com/ | sh \n"
+            },
+            "1" : {
+                "ami" : "AWSRegionArch2AMI",
+                "userdata" : "# not installing docker \n"
             }
         }
     },
@@ -264,7 +309,7 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "EBS" ] ] }
                     },
                     {
-                        "Key" : "infrakit.cluster",
+                        "Key" : "infrakit.scope",
                         "Value" : {"Ref": "AWS::StackName"}
                     },
                     {
@@ -286,7 +331,7 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "EBS" ] ] }
                     },
                     {
-                        "Key" : "infrakit.cluster",
+                        "Key" : "infrakit.scope",
                         "Value" : {"Ref": "AWS::StackName"}
                     },
                     {
@@ -308,7 +353,7 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "EBS" ] ] }
                     },
                     {
-                        "Key" : "infrakit.cluster",
+                        "Key" : "infrakit.scope",
                         "Value" : {"Ref": "AWS::StackName"}
                     },
                     {
@@ -348,18 +393,31 @@
                 ],
                 "AvailabilityZone" : { "Fn::GetAtt" : [ "Subnet1", "AvailabilityZone" ] },
                 "ImageId" : {
-                    "Fn::FindInMap": ["AWSRegionArch2AMI", {
-                        "Ref": "AWS::Region"
-                    }, {
-                        "Fn::FindInMap": ["AWSInstanceType2Arch", {"Ref" : "InstanceType"}, "Arch"]
-                    }]
+                    "Fn::FindInMap": [
+                        { "Fn::FindInMap" : [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "ami" ] },
+                        { "Ref": "AWS::Region" },
+                        { "Fn::FindInMap": ["AWSInstanceType2Arch", {"Ref" : "InstanceType"}, "Arch"]}
+                    ]
                 },
                 "UserData" : {
                     "Fn::Base64" : {
                         "Fn::Join" :
                         [ "", [
                             "#!/bin/sh \n",
-                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",{"Ref":"BootScriptURL"}," | tee /var/lib/infrakit.boot | sh \n"
+                            {
+                                "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
+                            },
+                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",
+                               {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
+                               " --global /cluster/name=", {"Ref":"AWS::StackName"},
+                               " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},
+                               " --global /provider/image/hasDocker=1",
+                               " --global /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
+                               " --global /infrakit/docker/image=", {"Ref":"InfrakitCore"},
+                               " --global /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
+                               " --global /infrakit/metadata/docker/image=", {"Ref":"InfrakitMetadataPlugin"},
+                               " --global /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
+                               " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
                 },
@@ -369,8 +427,16 @@
                         "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "Bootstrap" ] ] }
                     },
                     {
+                        "Key" : "infrakit.scope",
+                        "Value" : {"Ref":"AWS::StackName"}
+                    },
+                    {
                         "Key" : "infrakit.group",
                         "Value" : "swarm-managers"
+                    },
+                    {
+                        "Key" : "infrakit.config_sha",
+                        "Value" : "bootstrap"
                     },
                     {
                         "Key" : "infrakit.role",

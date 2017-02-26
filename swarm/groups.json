@@ -16,13 +16,13 @@ the instances it manages reside.
 {{ $swarmLeaderIP := ref "/cluster/swarm/join/ip" }}
 {{ $managerIPs := ref "/cluster/swarm/manager/ips" }}
 
-{{ $workerSize := 3 }}
+{{ $workerSize := sub (ref "/cluster/swarm/size") (len $managerIPs) }}
 {{ $dockerEngine := "unix:///var/run/docker.sock" }} {{/* for this flavor to connect to */}}
 
-{{ $managerInit := cat (ref "/cluster/config/urlRoot") "manager-init.sh" | nospace }}
-{{ $workerInit := cat (ref "/cluster/config/urlRoot") "worker-init.sh" | nospace }}
+{{ $managerInit := cat (ref "/infrakit/config/root") "/manager-init.sh" | nospace }}
+{{ $workerInit := cat (ref "/infrakit/config/root") "/worker-init.sh" | nospace }}
 
-{{ $myGroups := include "aws/groups.json" | from_json }}
+{{ $myGroups := include (cat (ref "/cluster/provider") "/groups.json" | nospace) | from_json }}
 
 [
     {
