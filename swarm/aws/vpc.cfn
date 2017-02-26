@@ -99,52 +99,52 @@
             }
         },
 
-        "AWSRegionArch2AMIUbuntu14NoDocker": {
+        "AWSRegionArch2AMIUbuntu1604NoDocker": {
             "eu-central-1": {
-                "HVM64": "ami-78559817",
+                "HVM64": "ami-3f1bd150",
                 "HVMG2": "NOT_SUPPORTED"
             },
             "us-east-1": {
-                "HVM64": "ami-49c9295f",
+                "HVM64": "ami-f4cc1de2",
                 "HVMG2": "NOT_SUPPORTED"
             },
             "us-west-1": {
-                "HVM64": "ami-3e21725e",
+                "HVM64": "ami-16efb076",
                 "HVMG2": "NOT_SUPPORTED"
             },
             "us-west-2": {
-                "HVM64": "ami-5e63d13e",
+                "HVM64": "ami-a58d0dc5",
                 "HVMG2": "NOT_SUPPORTED"
             }
         },
 
         "AWSRegionArch2AMI": {
             "eu-central-1": {
-                "HVM64": "ami-5f0dc530",
+                "HVM64": "ami-aab96cc5",
                 "HVMG2": "NOT_SUPPORTED"
             },
             "us-east-1": {
-                "HVM64": "ami-85dd1c93",
+                "HVM64": "ami-d8b569ce",
                 "HVMG2": "NOT_SUPPORTED"
             },
             "us-west-1": {
-                "HVM64": "ami-42570b22",
+                "HVM64": "ami-71411f11",
                 "HVMG2": "NOT_SUPPORTED"
             },
             "us-west-2": {
-                "HVM64": "ami-5659dc36",
+                "HVM64": "ami-c877f4a8",
                 "HVMG2": "NOT_SUPPORTED"
             }
         },
 
         "AMISelector" : {
             "no" : {
-                "ami" : "AWSRegionArch2AMIUbuntu14NoDocker",
+                "ami" : "AWSRegionArch2AMIUbuntu1604NoDocker",
                 "userdata" : "wget -qO- https://get.docker.com/ | sh \n"
             },
             "yes" : {
                 "ami" : "AWSRegionArch2AMI",
-                "userdata" : "# not installing docker \n"
+                "userdata" : "# Docker pre-installed \n"
             }
         }
     },
