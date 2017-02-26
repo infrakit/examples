@@ -3,7 +3,7 @@
 {{ global "/cluster/provider" "aws" }}
 {{ global "/cluster/swarm/join/ip" "172.31.16.101" }}
 {{ global "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
-{{ global "/local/install/docker" (eq (ref "/provider/image/hasDocker") "0") }}
+{{ global "/local/install/docker" (ref "/provider/image/hasDocker" | eq "0") }}
 {{ if empty (ref "/local/docker/engine/labels") }}{{ global "/local/docker/engine/labels" (from_json "[]") }}{{end}}
 
 {{ global "/infrakit/home" "/infrakit" }}
@@ -17,7 +17,7 @@ if not available, we expect to come from command line or some other means -- see
 {{ if metadata "var" }}
 {{ global "/cluster/name"                   ( metadata "var/export/cfn/stack" )}}
 {{ global "/cluster/swarm/size"             ( metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
-{{ global "/provider/image/hasDocker"       ( metadata "var/export/cfn/config/Parameters/PreinstalledDockerAMI" )}}
+{{ global "/provider/image/hasDocker"       ( metadata "var/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
 {{ global "/infrakit/config/root"           ( metadata "var/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
 {{ global "/infrakit/docker/image"          ( metadata "var/export/cfn/config/Parameters/InfrakitCore/ParameterValue" )}}
 {{ global "/infrakit/instance/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitInstancePlugin/ParameterValue" )}}

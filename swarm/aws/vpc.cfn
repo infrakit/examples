@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "InfraKit VPC Builder",
+    "Description": "InfraKit Demo - builds a new VPC with a Docker Swarm",
 
     "Parameters": {
         "PreinstalledDockerAMI": {
@@ -8,7 +8,7 @@
             "Type": "Number",
             "MinValue": "0",
             "MaxValue": "1",
-	    "Default": "1"
+            "Default": "1"
         },
         "ClusterSize": {
             "Description": "Size of the cluster",
