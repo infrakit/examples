@@ -37,12 +37,12 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/swarm"
+            "Default" : "https://infrakit.github.io/examples/swarm"
         },
         "MetadataExportTemplate" : {
             "Type" : "String",
             "Description" : "URL to configure the metadata plugin",
-            "Default" : "https://chungers.github.io/examples/metadata/aws/export.ikt"
+            "Default" : "https://infrakit.github.io/examples/metadata/aws/export.ikt"
         },
         "InfrakitCore" : {
             "Type" : "String",
