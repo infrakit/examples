@@ -26,6 +26,15 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 
 {{ $groupsURL := cat (ref "/infrakit/config/root") "/groups.json" | nospace }}
 
+{{ $managerGlobals := trim `
+/cluster/name
+/cluster/swarm/size
+/infrakit/config/root
+/infrakit/docker/image
+/infrakit/instance/docker/image
+/infrakit/metadata/configURL
+/infrakit/metadata/docker/image
+/provider/image/hasDocker` | split "\n" }}
 
 echo "Starting up infrakit"
 docker run -d --restart always --name manager \
@@ -52,4 +61,4 @@ docker run -d --restart always --name metadata \
 sleep 10
 
 # Try to commit - this is idempotent but don't error out and stop the cloud init script!
-echo "Commiting to infrakit $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit manager commit {{$groupsURL}})"
+echo "Commiting to infrakit $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit manager commit {{$groupsURL}}{{range $k, $v := $managerGlobals}} --global {{$v -}}={{- ref $v}}{{end}})"

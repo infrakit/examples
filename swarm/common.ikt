@@ -13,7 +13,7 @@
 Integration with the metadata plugin here -- note the values here are from the cloudformation metadata
 if not available, we expect to come from command line or some other means -- see vpc.cfn boostrap node's userdata
 */}}
-{{ if metadata "var" }}
+{{ if metadata "var/export/cfn" }}
 {{ global "/cluster/name"                   ( metadata "var/export/cfn/stack" )}}
 {{ global "/cluster/swarm/size"             ( metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
 {{ global "/provider/image/hasDocker"       ( metadata "var/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}

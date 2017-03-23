@@ -1,0 +1,280 @@
+{{ def "/cluster/name" "MyTestCluster" }}
+{{ def "/cluster/swarm/size" "Number of swarm nodes to create" 4 }}
+{{ def "/ec2/availabilityZone" "EC2 Availability Zone" "us-west-2a" }}
+{{ def "/ec2/imageID" "EC2 Amazon Machine Image" "ami-c877f4a8" }}
+{{ def "/ec2/instanceType" "EC2 HVM instance type (t2.micro, m3.medium, etc)." "t2.micro" }}
+{{ def "/ec2/keyName" "EC2 key pair name" "ValidEC2KeyPairName" }}
+{{ def "/infrakit/config/root" "Root URL of the bootscript" "https://infrakit.github.io/examples/swarm" }}
+{{ def "/infrakit/docker/image" "Docker image of Infrakit" "infrakit/devbundle:0.4.1" }}
+{{ def "/infrakit/instance/docker/image" "Docker image of Infrakit AWS instance plugin" "infrakit/aws:0.4.1" }}
+{{ def "/infrakit/metadata/configURL" "URL to configure the metadata plugin" "https://infrakit.github.io/examples/metadata/aws/export.ikt" }}
+{{ def "/infrakit/metadata/docker/image" "Docker image of Infrakit AWS metadata plugin" "infrakit/aws:0.4.1" }}
+{{ def "/net/bootstrapNodePrivateIP" "Private IP of the bootstrap node" "172.31.16.101" }}
+{{ def "/net/subnetCidr" "172.31.16.0/20" }}
+{{ def "/net/vpcCidr" "172.31.0.0/16" }}
+
+{{ $clusterName := ref "/cluster/name" }}
+{{ $clusterSwarmSize := ref "/cluster/swarm/size" }}
+{{ $infrakitConfigRoot := ref "/infrakit/config/root" }}
+{{ $infrakitDockerImage := ref "/infrakit/docker/image" }}
+{{ $infrakitInstanceDockerPlugin := ref "/infrakit/instance/docker/image" }}
+{{ $infrakitMetadataConfigURL := ref "/infrakit/metadata/configURL" }}
+{{ $infrakitMetadataDockerImage := ref "/infrakit/metadata/docker/image" }}
+
+{
+    "ID": "{{ ref "/cluster/name" }}",
+    "Properties": {
+        "Resources": [
+
+            {
+                "ID": "Vpc",
+                "Plugin": "instance-aws/ec2-vpc",
+                "Properties": {
+                    "CreateVpcInput": {
+                        "CidrBlock": "{{ ref "/net/vpcCidr" }}"
+                    },
+                    "ModifyVpcAttributeInputs": [
+                        { "EnableDnsSupport": {"Value": true} },
+                        { "EnableDnsHostnames": {"Value": true} }
+                    ],
+                    "Tags": {
+                        "Name": "$clusterName{{ ref "/cluster/name" }}-VPC"
+                    }
+                }
+            },
+
+            {
+                "ID": "Subnet",
+                "Plugin": "instance-aws/ec2-subnet",
+                "Properties": {
+                    "CreateSubnetInput": {
+                        "VpcId": "{{ resource "Vpc" }}",
+                        "CidrBlock": "{{ ref "/net/subnetCidr" }}",
+                        "AvailabilityZone": "{{ ref "/ec2/availabilityZone" }}"
+                    },
+                    "Tags": {
+                        "Name": "{{ ref "/cluster/name" }}-Subnet"
+                    }
+                }
+            },
+
+            {
+                "ID": "InternetGateway",
+                "Plugin": "instance-aws/ec2-internetgateway",
+                "Properties": {
+                    "CreateInternetGatewayIntput": {},
+                    "AttachInternetGatewayInput": {
+                        "VpcId": "{{ resource "Vpc" }}"
+                    },
+                    "Tags": {
+                        "Name": "{{ ref "/cluster/name" }}-IGW"
+                    }
+                }
+            },
+
+            {
+                "ID": "RouteViaIgw",
+                "Plugin": "instance-aws/ec2-routetable",
+                "Properties": {
+                    "CreateRouteTableInput": {
+                        "VpcId": "{{ resource "Vpc" }}"
+                    },
+                    "CreateRouteInputs": [
+                        {
+                            "DestinationCidrBlock": "0.0.0.0/0",
+                            "GatewayId": "{{ resource "InternetGateway" }}"
+                        }
+                    ],
+                    "AssociateRouteTableInputs": [
+                        {
+                            "SubnetId": "{{ resource "Subnet" }}"
+                        }
+                    ],
+                    "Tags": {
+                        "Name": "{{ ref "/cluster/name" }}-RT"
+                    }
+                }
+            },
+
+            {
+                "ID": "SecurityGroup",
+                "Plugin": "instance-aws/ec2-securitygroup",
+                "Properties": {
+                    "CreateSecurityGroupInput": {
+                        "Description": "VPC-wide security group",
+                        "VpcId": "{{ resource "Vpc" }}"
+                    },
+                    "AuthorizeSecurityGroupIngressInput": {
+                        "IpPermissions": [
+                            {
+                                "IpProtocol": "-1",
+                                "FromPort": 0,
+                                "ToPort": 65535,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "{{ ref "/net/vpcCidr" }}"
+                                    }
+                                ]
+                            },
+                            {
+                                "IpProtocol": "tcp",
+                                "FromPort": 22,
+                                "ToPort": 22,
+                                "IpRanges": [
+                                    {
+                                        "CidrIp": "0.0.0.0/0"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+
+            {
+                "ID": "ProvisionerRole",
+                "Plugin": "instance-aws/iam-role",
+                "Properties": {
+                    "CreateRoleInput": {
+                        "AssumeRolePolicyDocument": {{ `{
+                            "Version": "2012-10-17",
+                            "Statement": [ {
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [ "ec2.amazonaws.com" ]
+                                },
+                                "Action": [ "sts:AssumeRole" ]
+                            } ]
+                        }` | jsonEncode }}
+                    },
+                    "PutRolePolicyInputs": [
+                        {
+                            "PolicyDocument": {{ `{
+                                "Version": "2012-10-17",
+                                "Statement": [
+                                    {
+                                        "Effect": "Allow",
+                                        "Action": "*",
+                                        "Resource": "*"
+                                    }
+                                ]
+                            }` | jsonEncode }}
+                        }
+                    ]
+                }
+            },
+
+            {
+                "ID": "InstanceProfile",
+                "Plugin": "instance-aws/iam-instanceprofile",
+                "Properties": {
+                    "CreateInstanceProfileInput": {},
+                    "AddRoleToInstanceProfileInput": {
+                        "RoleName": "{{ resource "ProvisionerRole" }}"
+                    }
+                }
+            },
+
+            {
+                "ID": "Volume1",
+                "Plugin": "instance-aws/ec2-volume",
+                "Properties": {
+                    "CreateVolumeInput": {
+                        "AvailabilityZone": "{{ ref "/ec2/availabilityZone" }}",
+                        "Size": 4
+                    },
+                    "Tags": {
+                        "Name": "{{ ref "/cluster/name" }}-EBS",
+                        "infrakit.scope": "{{ ref "/cluster/name" }}",
+                        "docker-infrakit-volume": "172.31.16.101"
+                    }
+                }
+            },
+
+            {
+                "ID": "Volume2",
+                "Plugin": "instance-aws/ec2-volume",
+                "Properties": {
+                    "CreateVolumeInput": {
+                        "AvailabilityZone": "{{ ref "/ec2/availabilityZone" }}",
+                        "Size": 4
+                    },
+                    "Tags": {
+                        "Name": "{{ ref "/cluster/name" }}-EBS",
+                        "infrakit.scope": "{{ ref "/cluster/name" }}",
+                        "docker-infrakit-volume": "172.31.16.102"
+                    }
+                }
+            },
+
+            {
+                "ID": "Volume3",
+                "Plugin": "instance-aws/ec2-volume",
+                "Properties": {
+                    "CreateVolumeInput": {
+                        "AvailabilityZone": "{{ ref "/ec2/availabilityZone" }}",
+                        "Size": 4
+                    },
+                    "Tags": {
+                        "Name": "{{ ref "/cluster/name" }}-EBS",
+                        "infrakit.scope": "{{ ref "/cluster/name" }}",
+                        "docker-infrakit-volume": "172.31.16.103"
+                    }
+                }
+            },
+
+            {
+                "ID": "BootstrapInstance",
+                "Plugin": "instance-aws/ec2-instance",
+                "Properties": {
+                    "RunInstancesInput": {
+                        "IamInstanceProfile": {"Name": "{{ resource "InstanceProfile" }}"},
+                        "ImageId": "{{ ref "/ec2/imageID" }}",
+                        "InstanceType": "{{ ref "/ec2/instanceType" }}",
+                        "KeyName": "{{ ref "/ec2/keyName" }}",
+                        "NetworkInterfaces": [
+                            {
+                                "AssociatePublicIpAddress": true,
+                                "DeleteOnTermination": true,
+                                "DeviceIndex": 0,
+                                "Groups": ["{{ resource "SecurityGroup" }}"],
+                                "PrivateIpAddress": "{{ ref "/net/bootstrapNodePrivateIP" }}",
+                                "SubnetId": "{{ resource "Subnet" }}"
+                            }
+                        ],
+                        "Placement": {"AvailabilityZone":  "{{ ref "/ec2/availabilityZone" }}"},
+                        "UserData": {{ print `#!/bin/sh
+
+docker 2>/dev/null || wget -qO- https://get.docker.com/ | sh
+
+docker run --rm infrakit/devbundle:dev infrakit template --url ` $infrakitConfigRoot `/boot.sh \
+    --global /cluster/name=` $clusterName ` \
+    --global /cluster/swarm/size=` $clusterSwarmSize ` \
+    --global /infrakit/config/root=` $infrakitConfigRoot ` \
+    --global /infrakit/docker/image=` $infrakitDockerImage ` \
+    --global /infrakit/instance/docker/image=` $infrakitInstanceDockerPlugin ` \
+    --global /infrakit/metadata/configURL=` $infrakitMetadataConfigURL ` \
+    --global /infrakit/metadata/docker/image=` $infrakitMetadataDockerImage ` \
+    --global /provider/image/hasDocker=yes \
+    | tee /var/lib/infrakit.boot | sh
+` | jsonEncode }}
+                    },
+                    "AttachVolumeInputs": [
+                        {
+                            "Device": "/dev/xvdf",
+                            "VolumeId": "{{ resource "Volume1" }}"
+                        }
+                    ],
+                    "Tags": {
+                        "Name": "{{ ref "/cluster/name" }}-Bootstrap",
+                        "infrakit.scope": "{{ ref "/cluster/name" }}",
+                        "infrakit.group": "swarm-managers",
+                        "infrakit.config_sha": "bootstrap",
+                        "infrakit.role": "managers"
+                    }
+                }
+            }
+
+        ]
+    }
+}
