@@ -46,17 +46,17 @@
         "InfrakitCore" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit",
-            "Default" : "infrakit/devbundle:0.4.1"
+            "Default" : "infrakit/devbundle:latest"
         },
         "InfrakitInstancePlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS instance plugin",
-            "Default" : "infrakit/aws:0.4.1"
+            "Default" : "infrakit/aws:latest"
         },
         "InfrakitMetadataPlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS metadata plugin",
-            "Default" : "infrakit/aws:0.4.1"
+            "Default" : "infrakit/aws:latest"
         }
     },
 
@@ -406,7 +406,7 @@
                             {
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
-                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",
+                            "docker run --rm ", {"Ref":"InfrakitCore"}, " infrakit template ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --global /cluster/name=", {"Ref":"AWS::StackName"},
                                " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},

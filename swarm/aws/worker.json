@@ -4,7 +4,7 @@ Config for workers on AWS
 
 */}}
 {
-    "Plugin": "instance-aws",
+    "Plugin": "instance-aws/ec2-instance",
     "Properties": {
         "Tags": {
             "infrakit.clusterName": "{{ ref "/cluster/name" }}",
