@@ -1,25 +1,18 @@
 {{ def "/cluster/name" "MyTestCluster" }}
-{{ def "/cluster/swarm/size" "Number of swarm nodes to create" 4 }}
+{{ def "/cluster/swarm/size" "Number of swarm nodes to create.  Three will be managers; the rest, workers." 4 }}
 {{ def "/ec2/availabilityZone" "EC2 Availability Zone" "us-west-2a" }}
 {{ def "/ec2/imageID" "EC2 Amazon Machine Image" "ami-c877f4a8" }}
 {{ def "/ec2/instanceType" "EC2 HVM instance type (t2.micro, m3.medium, etc)." "t2.micro" }}
 {{ def "/ec2/keyName" "EC2 key pair name" "ValidEC2KeyPairName" }}
 {{ def "/infrakit/config/root" "Root URL of the bootscript" "https://infrakit.github.io/examples/swarm" }}
-{{ def "/infrakit/docker/image" "Docker image of Infrakit" "infrakit/devbundle:latest" }}
-{{ def "/infrakit/instance/docker/image" "Docker image of Infrakit AWS instance plugin" "infrakit/aws:latest" }}
+{{ def "/infrakit/docker/image" "Docker image of InfraKit" "infrakit/devbundle:latest" }}
+{{ def "/infrakit/instance/docker/image" "Docker image of InfraKit AWS instance plugin" "infrakit/aws:latest" }}
 {{ def "/infrakit/metadata/configURL" "URL to configure the metadata plugin" "https://infrakit.github.io/examples/metadata/aws/export.ikt" }}
-{{ def "/infrakit/metadata/docker/image" "Docker image of Infrakit AWS metadata plugin" "infrakit/aws:latest" }}
+{{ def "/infrakit/metadata/docker/image" "Docker image of InfraKit AWS metadata plugin" "infrakit/aws:latest" }}
 {{ def "/net/bootstrapNodePrivateIP" "Private IP of the bootstrap node" "172.31.16.101" }}
 {{ def "/net/subnetCidr" "172.31.16.0/20" }}
 {{ def "/net/vpcCidr" "172.31.0.0/16" }}
-
-{{ $clusterName := ref "/cluster/name" }}
-{{ $clusterSwarmSize := ref "/cluster/swarm/size" }}
-{{ $infrakitConfigRoot := ref "/infrakit/config/root" }}
-{{ $infrakitDockerImage := ref "/infrakit/docker/image" }}
-{{ $infrakitInstanceDockerPlugin := ref "/infrakit/instance/docker/image" }}
-{{ $infrakitMetadataConfigURL := ref "/infrakit/metadata/configURL" }}
-{{ $infrakitMetadataDockerImage := ref "/infrakit/metadata/docker/image" }}
+{{ def "/provider/image/hasDocker" "Does /ec2/imageID include Docker ('yes' or 'no')?" "yes" }}
 
 {
     "ID": "{{ ref "/cluster/name" }}",
@@ -38,7 +31,7 @@
                         { "EnableDnsHostnames": {"Value": true} }
                     ],
                     "Tags": {
-                        "Name": "$clusterName{{ ref "/cluster/name" }}-VPC"
+                        "Name": "{{ ref "/cluster/name" }}-VPC"
                     }
                 }
             },
@@ -247,15 +240,15 @@
 
 docker 2>/dev/null || wget -qO- https://get.docker.com/ | sh
 
-docker run --rm ` $infrakitDockerImage ` infrakit template ` $infrakitConfigRoot `/boot.sh \
-    --global /cluster/name=` $clusterName ` \
-    --global /cluster/swarm/size=` $clusterSwarmSize ` \
-    --global /infrakit/config/root=` $infrakitConfigRoot ` \
-    --global /infrakit/docker/image=` $infrakitDockerImage ` \
-    --global /infrakit/instance/docker/image=` $infrakitInstanceDockerPlugin ` \
-    --global /infrakit/metadata/configURL=` $infrakitMetadataConfigURL ` \
-    --global /infrakit/metadata/docker/image=` $infrakitMetadataDockerImage ` \
-    --global /provider/image/hasDocker=yes \
+docker run --rm ` (ref "/infrakit/docker/image") ` infrakit template ` (ref "/infrakit/config/root") `/boot.sh \
+    --global /cluster/name=` (ref "/cluster/name") ` \
+    --global /cluster/swarm/size=` (ref "/cluster/swarm/size") ` \
+    --global /infrakit/config/root=` (ref "/infrakit/config/root") ` \
+    --global /infrakit/docker/image=` (ref "/infrakit/docker/image") ` \
+    --global /infrakit/instance/docker/image=` (ref "/infrakit/instance/docker/image") ` \
+    --global /infrakit/metadata/configURL=` (ref "/infrakit/metadata/configURL") ` \
+    --global /infrakit/metadata/docker/image=` (ref "/infrakit/metadata/docker/image") ` \
+    --global /provider/image/hasDocker=` (ref "/provider/image/hasDocker") ` \
     | tee /var/lib/infrakit.boot | sh
 ` | jsonEncode }}
                     },
