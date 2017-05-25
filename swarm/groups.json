@@ -19,6 +19,17 @@ the instances it manages reside.
 {{ $workerSize := sub (ref "/cluster/swarm/size") (len $managerIPs) }}
 {{ $dockerEngine := "unix:///var/run/docker.sock" }} {{/* for this flavor to connect to */}}
 
+{{ $initFormatString := print `str://#!/bin/bash
+{{ global "/cluster/name" "` (ref "/cluster/name") `" }}
+{{ global "/cluster/swarm/size" "` (ref "/cluster/swarm/size") `" }}
+{{ global "/infrakit/config/root" "` (ref "/infrakit/config/root") `" }}
+{{ global "/infrakit/docker/image" "` (ref "/infrakit/docker/image") `" }}
+{{ global "/infrakit/instance/docker/image" "` (ref "/infrakit/instance/docker/image") `" }}
+{{ global "/infrakit/metadata/configURL" "` (ref "/infrakit/metadata/configURL") `" }}
+{{ global "/infrakit/metadata/docker/image" "` (ref "/infrakit/metadata/docker/image") `" }}
+{{ global "/provider/image/hasDocker" "` (ref "/provider/image/hasDocker") `" }}
+{{ include "%s" . }}
+` }}
 {{ $managerInit := cat (ref "/infrakit/config/root") "/manager-init.sh" | nospace }}
 {{ $workerInit := cat (ref "/infrakit/config/root") "/worker-init.sh" | nospace }}
 
@@ -47,7 +58,7 @@ the instances it manages reside.
                                 { "ID":"{{index $managerIPs 2}}", "Type":"ebs" }
                             ]
                         },
-                        "InitScriptTemplateURL": "{{ $managerInit }}",
+                        "InitScriptTemplateURL": {{ printf $initFormatString $managerInit | to_json}},
                         "SwarmJoinIP": "{{ $swarmLeaderIP }}",
                         "Docker" : {
                             "Host" : "{{ $dockerEngine }}"
@@ -70,7 +81,7 @@ the instances it manages reside.
                 "Flavor": {
                     "Plugin": "flavor-swarm/worker",
                     "Properties": {
-                        "InitScriptTemplateURL": "{{ $workerInit }}",
+                        "InitScriptTemplateURL": {{ printf $initFormatString $workerInit | to_json}},
                         "SwarmJoinIP": "{{ $swarmLeaderIP }}",
                         "Docker" : {
                             "Host" : "{{ $dockerEngine }}"
