@@ -6,7 +6,7 @@ apt-get install -y jq
 
 wget -qO- https://get.docker.com/ | sh
 
-sudo usermod -aG docker {{ ref "/local/docker/user" }}
+sudo usermod -aG docker {{ var "/local/docker/user" }}
 
 # For Upstart ONLY (pre- Ubuntu 15.04)
 if [ -d "/var/log/upstart" ]; then

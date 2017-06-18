@@ -13,16 +13,16 @@ the instances it manages reside.
 {{ source "common.ikt" }} {{/* a common template included here to define global variables */}}
 
 {{/* Local variables */}}
-{{ $swarmLeaderIP := ref "/cluster/swarm/join/ip" }}
-{{ $managerIPs := ref "/cluster/swarm/manager/ips" }}
+{{ $swarmLeaderIP := var "/cluster/swarm/join/ip" }}
+{{ $managerIPs := var "/cluster/swarm/manager/ips" }}
 
-{{ $workerSize := sub (ref "/cluster/swarm/size") (len $managerIPs) }}
+{{ $workerSize := sub (var "/cluster/swarm/size") (len $managerIPs) }}
 {{ $dockerEngine := "unix:///var/run/docker.sock" }} {{/* for this flavor to connect to */}}
 
-{{ $managerInit := cat (ref "/infrakit/config/root") "/manager-init.sh" | nospace }}
-{{ $workerInit := cat (ref "/infrakit/config/root") "/worker-init.sh" | nospace }}
+{{ $managerInit := cat (var "/infrakit/config/root") "/manager-init.sh" | nospace }}
+{{ $workerInit := cat (var "/infrakit/config/root") "/worker-init.sh" | nospace }}
 
-{{ $myGroups := include (cat (ref "/cluster/provider") "/groups.json" | nospace) | from_json }}
+{{ $myGroups := include (cat (var "/cluster/provider") "/groups.json" | nospace) | jsonDecode }}
 
 [
     {
@@ -31,7 +31,7 @@ the instances it manages reside.
             "ID": "swarm-managers",
             "Properties": {
                 "Allocation": {
-                    "LogicalIDs": {{ $managerIPs | to_json }}
+                    "LogicalIDs": {{ $managerIPs | jsonEncode }}
                 },
                 "Flavor": {
                     "Plugin": "flavor-swarm/manager",
@@ -54,7 +54,7 @@ the instances it manages reside.
                         }
                     }
                 },
-                "Instance": {{ $myGroups.Managers | to_json }}
+                "Instance": {{ $myGroups.Managers | jsonEncode }}
             }
         }
     }
@@ -77,7 +77,7 @@ the instances it manages reside.
                         }
                     }
                 },
-                "Instance": {{ $myGroups.Workers | to_json }}
+                "Instance": {{ $myGroups.Workers | jsonEncode }}
             }
         }
     }

@@ -46,7 +46,7 @@
         "InfrakitCore" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit",
-            "Default" : "infrakit/devbundle:dev"
+            "Default" : "infrakit/devbundle"
         },
         "InfrakitInstancePlugin" : {
             "Type" : "String",
@@ -412,7 +412,7 @@
                             {
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
-                            "docker run --rm infrakit/devbundle:dev infrakit template -f ",
+                            "docker run --rm ", {"Ref":"InfrakitCore"} ," infrakit template -f ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
                                " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},

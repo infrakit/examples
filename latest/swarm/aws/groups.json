@@ -16,19 +16,19 @@ AWS specific - This is where we introspect the environment and export the values
 {{ $subnetID := cat $netprefix "subnet-id" | nospace | include }}
 {{ $vpcID := cat $netprefix "vpc-id" | nospace | include }}
 
-{{ $iam := include "http://169.254.169.254/latest/meta-data/iam/info" | from_json }} {{/* parsed as object */}}
+{{ $iam := include "http://169.254.169.254/latest/meta-data/iam/info" | jsonDecode }} {{/* parsed as object */}}
 
 {{/* export variables so that they are visible in included templates */}}
-{{ global "/local/availabilityZone" $availabilityZone }}
-{{ global "/local/amiID" $amiID }}
-{{ global "/local/instanceType" $instanceType }}
-{{ global "/local/keyName" $keyName }}
-{{ global "/local/mac" $mac }}
-{{ global "/local/securityGroups" $securityGroups }}
-{{ global "/local/securityGroupIDs" $securityGroupIDs }}
-{{ global "/local/subnetID" $subnetID }}
-{{ global "/local/vpcID" $vpcID }}
-{{ global "/local/iam" $iam }} {{/* an object */}}
+{{ var "/local/availabilityZone" $availabilityZone }}
+{{ var "/local/amiID" $amiID }}
+{{ var "/local/instanceType" $instanceType }}
+{{ var "/local/keyName" $keyName }}
+{{ var "/local/mac" $mac }}
+{{ var "/local/securityGroups" $securityGroups }}
+{{ var "/local/securityGroupIDs" $securityGroupIDs }}
+{{ var "/local/subnetID" $subnetID }}
+{{ var "/local/vpcID" $vpcID }}
+{{ var "/local/iam" $iam }} {{/* an object */}}
 
 
 {

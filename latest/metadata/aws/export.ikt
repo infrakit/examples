@@ -15,7 +15,7 @@ AWS specific - This is where we introspect the environment and export the values
 {{ $subnetID := cat $netprefix "subnet-id" | nospace | include }}
 {{ $vpcID := cat $netprefix "vpc-id" | nospace | include }}
 
-{{ $iam := include "http://169.254.169.254/latest/meta-data/iam/info" | from_json }} {{/* parsed as object */}}
+{{ $iam := include "http://169.254.169.254/latest/meta-data/iam/info" | jsonDecode }} {{/* parsed as object */}}
 
 {{/* export them values here as metadata */}}
 {{ export "local/availabilityZone" $availabilityZone }}

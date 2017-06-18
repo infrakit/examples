@@ -36,27 +36,27 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://infrakit.github.io/examples/swarm"
+            "Default" : "https://infrakit.github.io/examples/latest/swarm"
         },
         "MetadataExportTemplate" : {
             "Type" : "String",
             "Description" : "URL to configure the metadata plugin",
-            "Default" : "https://infrakit.github.io/examples/metadata/aws/export.ikt"
+            "Default" : "https://infrakit.github.io/examples/latest/metadata/aws/export.ikt"
         },
         "InfrakitCore" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit",
-            "Default" : "infrakit/devbundle:0.4.1"
+            "Default" : "infrakit/devbundle:latest"
         },
         "InfrakitInstancePlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS instance plugin",
-            "Default" : "infrakit/aws:0.4.1"
+            "Default" : "infrakit/aws:latest"
         },
         "InfrakitMetadataPlugin" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit AWS metadata plugin",
-            "Default" : "infrakit/aws:0.4.1"
+            "Default" : "infrakit/aws:latest"
         }
     },
 
@@ -245,6 +245,12 @@
                         "FromPort": "22",
                         "ToPort": "22",
                         "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "24864",
+                        "ToPort": "24864",
+                        "CidrIp": "0.0.0.0/0"
                     }
                 ]
             }
@@ -406,16 +412,16 @@
                             {
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
-                            "docker run --rm infrakit/devbundle:dev infrakit template --url ",
+                            "docker run --rm ", {"Ref":"InfrakitCore"} ," infrakit template -f ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
-                               " --global /cluster/name=", {"Ref":"AWS::StackName"},
-                               " --global /cluster/swarm/size=", {"Ref":"ClusterSize"},
-                               " --global /provider/image/hasDocker=yes",
-                               " --global /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
-                               " --global /infrakit/docker/image=", {"Ref":"InfrakitCore"},
-                               " --global /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
-                               " --global /infrakit/metadata/docker/image=", {"Ref":"InfrakitMetadataPlugin"},
-                               " --global /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
+                               " --var /cluster/name=", {"Ref":"AWS::StackName"},
+                               " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
+                               " --var /provider/image/hasDocker=yes",
+                               " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
+                               " --var /infrakit/docker/image=", {"Ref":"InfrakitCore"},
+                               " --var /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
+                               " --var /infrakit/metadata/docker/image=", {"Ref":"InfrakitMetadataPlugin"},
+                               " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }

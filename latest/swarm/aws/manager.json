@@ -4,39 +4,39 @@ Instance plugin config for managers on AWS
 
 */}}
 {
-    "Plugin": "instance-aws",
+    "Plugin": "instance-aws/ec2-instance",
     "Properties": {
         "Tags": {
-            "infrakit.clusterName": "{{ ref "/cluster/name" }}",
+            "infrakit.clusterName": "{{ var "/cluster/name" }}",
             "infrakit.role" : "managers"
         },
         "RunInstancesInput": {
             "BlockDeviceMappings": null,
             "EbsOptimized": null,
             "IamInstanceProfile": {
-                "Arn": "{{ (ref "/local/iam").InstanceProfileArn }}",
+                "Arn": "{{ (var "/local/iam").InstanceProfileArn }}",
                 "Name": null
             },
-            "ImageId": "{{ ref "/local/amiID" }}",
-            "InstanceType": "{{ ref "/local/instanceType" }}",
-            "KeyName": "{{ ref "/local/keyName" }}",
+            "ImageId": "{{ var "/local/amiID" }}",
+            "InstanceType": "{{ var "/local/instanceType" }}",
+            "KeyName": "{{ var "/local/keyName" }}",
             "NetworkInterfaces": [
                 {
                     "AssociatePublicIpAddress": true,
                     "DeleteOnTermination": true,
                     "DeviceIndex": 0,
                     "Groups": [
-                        "{{ ref "/local/securityGroupIDs" }}"
+                        "{{ var "/local/securityGroupIDs" }}"
                     ],
                     "NetworkInterfaceId": null,
                     "PrivateIpAddress": null,  {{/* will be set by plugin if logical id is known */}}
                     "PrivateIpAddresses": null,
                     "SecondaryPrivateIpAddressCount": null,
-                    "SubnetId": "{{ ref "/local/subnetID" }}"
+                    "SubnetId": "{{ var "/local/subnetID" }}"
                 }
             ],
             "Placement": {
-                "AvailabilityZone": "{{ ref "/local/availabilityZone" }}",
+                "AvailabilityZone": "{{ var "/local/availabilityZone" }}",
                 "Tenancy": null
             },
             "PrivateIpAddress": null,
