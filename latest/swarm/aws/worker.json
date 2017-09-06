@@ -8,7 +8,8 @@ Config for workers on AWS
     "Properties": {
         "Tags": {
             "infrakit.clusterName": "{{ var "/cluster/name" }}",
-            "infrakit.role" : "workers"
+            "infrakit.role" : "workers",
+            "Name": "{{ var "/cluster/name" }}-worker"
         },
         "RunInstancesInput": {
             "BlockDeviceMappings": null,
