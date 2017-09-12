@@ -34,7 +34,7 @@ the instances it manages reside.
                     "LogicalIDs": {{ $managerIPs | jsonEncode }}
                 },
                 "Flavor": {
-                    "Plugin": "flavor-swarm/manager",
+                    "Plugin": "swarm/manager",
                     "Properties": {
                         "Attachments" : {
                             "{{index $managerIPs 0}}" : [
@@ -68,7 +68,7 @@ the instances it manages reside.
                     "Size": {{ $workerSize }}
                 },
                 "Flavor": {
-                    "Plugin": "flavor-swarm/worker",
+                    "Plugin": "swarm/worker",
                     "Properties": {
                         "InitScriptTemplateURL": "{{ $workerInit }}",
                         "SwarmJoinIP": "{{ $swarmLeaderIP }}",

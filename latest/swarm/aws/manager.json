@@ -4,7 +4,7 @@ Instance plugin config for managers on AWS
 
 */}}
 {
-    "Plugin": "instance-aws/ec2-instance",
+    "Plugin": "aws/ec2-instance",
     "Properties": {
         "Tags": {
             "infrakit.clusterName": "{{ var "/cluster/name" }}",
