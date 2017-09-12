@@ -43,20 +43,10 @@
             "Description" : "URL to configure the metadata plugin",
             "Default" : "https://chungers.github.io/examples/latest/metadata/aws/export.ikt"
         },
-        "InfrakitCore" : {
+        "Infrakit" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit",
             "Default" : "infrakit/devbundle:latest"
-        },
-        "InfrakitInstancePlugin" : {
-            "Type" : "String",
-            "Description" : "Docker image of Infrakit AWS instance plugin",
-            "Default" : "infrakit/aws:latest"
-        },
-        "InfrakitMetadataPlugin" : {
-            "Type" : "String",
-            "Description" : "Docker image of Infrakit AWS metadata plugin",
-            "Default" : "infrakit/aws:latest"
         }
     },
 
@@ -418,9 +408,7 @@
                                " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
                                " --var /provider/image/hasDocker=yes",
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
-                               " --var /infrakit/docker/image=", {"Ref":"InfrakitCore"},
-                               " --var /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
-                               " --var /infrakit/metadata/docker/image=", {"Ref":"InfrakitMetadataPlugin"},
+                               " --var /infrakit/docker/image=", {"Ref":"Infrakit"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]

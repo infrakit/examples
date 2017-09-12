@@ -15,8 +15,6 @@ if not available, we expect to come from command line or some other means -- see
 {{ var "/provider/image/hasDocker"       ( metadata "var/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
 {{ var "/infrakit/config/root"           ( metadata "var/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
 {{ var "/infrakit/docker/image"          ( metadata "var/export/cfn/config/Parameters/InfrakitCore/ParameterValue" )}}
-{{ var "/infrakit/instance/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitInstancePlugin/ParameterValue" )}}
-{{ var "/infrakit/metadata/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitMetadataPlugin/ParameterValue" )}}
 {{ var "/infrakit/metadata/configURL"    ( metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
 {{ end }}
 
