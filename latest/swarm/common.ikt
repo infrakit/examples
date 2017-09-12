@@ -5,10 +5,6 @@
 {{ var "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
 {{ if empty (var "/local/docker/engine/labels") }}{{ var "/local/docker/engine/labels" (jsonDecode "[]") }}{{end}}
 
-{{ var "/infrakit/home" "/infrakit" }}
-{{ var "/infrakit/docker/options/mount" (cat "-v /var/run/docker.sock:/var/run/docker.sock -v" (cat (var "/infrakit/home") ":/infrakit/" | nospace)) }}
-{{ var "/infrakit/docker/options/env" "-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins" }}
-
 {{/*
 Integration with the metadata plugin here -- note the values here are from the cloudformation metadata
 if not available, we expect to come from command line or some other means -- see vpc.cfn boostrap node's userdata
