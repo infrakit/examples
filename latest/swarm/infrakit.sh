@@ -23,9 +23,9 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
        -e INFRAKIT_MANAGER_BACKEND=swarm \
        -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
        -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
-       -e INFRAKIT_TAILER_PATH=/infrakit/logs/infrakit.log
+       -e INFRAKIT_TAILER_PATH=/infrakit/logs/infrakit.log \
        {{$dockerImage}} \
-       infrakit plugin start manager group aws swarm ingress time --log 5 > /infrakit/logs/infrakit.log
+       infrakit plugin start manager group aws swarm ingress time --log 5
 
 # Need a bit of time for the leader to discover itself
 sleep 10
