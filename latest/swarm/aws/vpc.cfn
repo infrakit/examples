@@ -3,6 +3,11 @@
     "Description": "InfraKit Demo - builds a new VPC with a Docker Swarm",
 
     "Parameters": {
+        "InfrakitConfigRoot" : {
+            "Type" : "String",
+            "Description" : "Root URL of the bootscript",
+            "Default" : "https://chungers.github.io/examples/latest/swarm"
+        },
         "PreinstalledDockerAMI": {
             "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
             "Type": "String",
@@ -37,11 +42,6 @@
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
             "Default" : "https://chungers.github.io/examples/latest/swarm"
-        },
-        "MetadataExportTemplate" : {
-            "Type" : "String",
-            "Description" : "URL to configure the metadata plugin",
-            "Default" : "https://chungers.github.io/examples/latest/metadata/aws/export.ikt"
         },
         "Infrakit" : {
             "Type" : "String",
@@ -409,7 +409,6 @@
                                " --var /provider/image/hasDocker=yes",
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/docker/image=", {"Ref":"Infrakit"},
-                               " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
