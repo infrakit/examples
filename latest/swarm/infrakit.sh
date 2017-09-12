@@ -1,16 +1,13 @@
 {{ source "common.ikt" }}
-
-# Set up infrakit.  This assumes Docker has been installed
-
-{{ $infrakitHome := var "/infrakit" }}
+echo # Set up infrakit.  This assumes Docker has been installed
+{{ $infrakitHome := `/infrakit` }}
 mkdir -p {{$infrakitHome}}/configs
 mkdir -p {{$infrakitHome}}/logs
 mkdir -p {{$infrakitHome}}/plugins
 
-{{ $dockerImage := var "/infrakit/docker/image" }}
-{{ $dockerMounts := `-v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit`}}
-{{ $dockerEnvs := `-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins`}}
-
+# dockerImage  {{ $dockerImage := var "/infrakit/docker/image" }}
+# dockerMounts {{ $dockerMounts := `-v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit` }}
+# dockerEnvs   {{ $dockerEnvs := `-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins`}}
 
 echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'" >> /root/.bashrc
 
@@ -18,7 +15,7 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 
 {{ $groupsURL := cat (var "/infrakit/config/root") "/groups.json" | nospace }}
 
-echo "Starting up infrakit"
+echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
        -e INFRAKIT_MANAGER_BACKEND=swarm \
        -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
