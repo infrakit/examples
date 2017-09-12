@@ -8,7 +8,8 @@ Instance plugin config for managers on AWS
     "Properties": {
         "Tags": {
             "infrakit.clusterName": "{{ var `/cluster/name` }}",
-            "infrakit.role" : "managers"
+            "infrakit.role" : "managers",
+            "Name": "{{ var `/cluster/name` }}-manager"
         },
         "RunInstancesInput": {
             "BlockDeviceMappings": null,
