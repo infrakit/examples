@@ -41,7 +41,12 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/swarm"
+            "Default" : "https://infrakit.github.io/examples/latest/swarm"
+        },
+        "MetadataExportTemplate" : {
+            "Type" : "String",
+            "Description" : "URL to configure the metadata plugin",
+            "Default" : "https://infrakit.github.io/examples/latest/metadata/aws/export.ikt"
         },
         "Infrakit" : {
             "Type" : "String",
@@ -406,8 +411,9 @@
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
                                " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
-                               " --var /provider/image/hasDocker=yes",
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
+                               " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
+                               " --var /provider/image/hasDocker=yes",
                                " --var /infrakit/docker/image=", {"Ref":"Infrakit"},
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]

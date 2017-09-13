@@ -9,23 +9,26 @@ mkdir -p {{$infrakitHome}}/plugins
 # dockerMounts {{ $dockerMounts := `-v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit` }}
 # dockerEnvs   {{ $dockerEnvs := `-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins`}}
 
+echo "Start up Cloudformation integration which reflects on the stack and provides some required info specified in CFN:
+{{ $stackName := var `/cluster/name` }}
+{{ $metadataExportUrl := var `/infrakit/metadata/configURL` }}
+{{ $metadataImage := `infrakit/aws:latest` }}
+{{ $metadataCmd := (cat `metadata --name var --template-url` $metadataExportUrl `--stack` $stackName) }}
+docker run -d --restart always --name cfn-reflect \
+       {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
+
 echo "Cluster size is {{ var `/cluster/swarm/size` }}"
 echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'" >> /root/.bashrc
 
 alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'
 
-{{ $groupsURL := cat (var "/infrakit/config/root") "/groups.json" | nospace }}
+{{ $groupsURL := cat (var `/infrakit/config/root`) `/groups.json` | nospace }}
 
-echo "Starting up AWS CloudFormation integration"
-docker run -d --restart always --name infrakit-cfn-reflect {{ $dockerMounts }} {{ $dockerEnvs }} \
-       -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
-       -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
-       -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
-       {{$dockerImage}} \
-       infrakit plugin start aws:cfn --log 5
 
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
+       -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
+       -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
        -e INFRAKIT_MANAGER_BACKEND=swarm \
        -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
        -e INFRAKIT_TAILER_PATH=/infrakit/logs/infrakit.log \
