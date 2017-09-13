@@ -15,11 +15,17 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 
 {{ $groupsURL := cat (var "/infrakit/config/root") "/groups.json" | nospace }}
 
+echo "Starting up AWS CloudFormation integration"
+docker run -d --restart always --name infrakit-cfn-reflect {{ $dockerMounts }} {{ $dockerEnvs }} \
+       -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
+       -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
+       -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
+       {{$dockerImage}} \
+       infrakit plugin start aws:cfn --log 5
+
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
        -e INFRAKIT_MANAGER_BACKEND=swarm \
-       -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
-       -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
        -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
        -e INFRAKIT_TAILER_PATH=/infrakit/logs/infrakit.log \
        {{$dockerImage}} \
