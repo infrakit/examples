@@ -38,10 +38,8 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
 # Need a bit of time for the leader to discover itself
 sleep 10
 
-# Try to commit - this is idempotent but don't error out and stop the cloud init script!
-#echo "Commiting to infrakit $(infrakit manager commit {{$groupsURL}})"
+echo "Rendering a view of the config groups.json for debugging."
+docker run --rm {{$dockerMounts}} {{$dockerEnv}} {{$dockerImage}} infrakit template {{$groupsURL}}
 
-echo "Rendering a view of the config groups.json...."
-infrakit template {{$groupsURL}}
-
+#Try to commit - this is idempotent but don't error out and stop the cloud init script!
 echo "Commiting to infrakit $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit manager commit {{$groupsURL}})"
