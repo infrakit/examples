@@ -9,21 +9,12 @@ mkdir -p {{$infrakitHome}}/plugins
 # dockerMounts {{ $dockerMounts := `-v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit` }}
 # dockerEnvs   {{ $dockerEnvs := `-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins`}}
 
-# echo "Start up Cloudformation integration which reflects on the stack and provides some required info specified in CFN:
-# {{ $stackName := var `/cluster/name` }}
-# {{ $metadataExportUrl := var `/infrakit/metadata/configURL` }}
-# {{ $metadataImage := `infrakit/aws:latest` }}
-# {{ $metadataCmd := (cat `metadata --name var --template-url` $metadataExportUrl `--stack` $stackName) }}
-# docker run -d --restart always --name cfn-reflect \
-#        {{$dockerMounts}} {{$dockerEnvs}} {{$metadataImage}} {{$metadataCmd}}
-
 echo "Cluster {{ var `/cluster/name` }} size is {{ var `/cluster/swarm/size` }}"
 echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'" >> /root/.bashrc
 
 alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'
 
 {{ $groupsURL := cat (var `/infrakit/config/root`) `/groups.json` | nospace }}
-
 
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
@@ -39,7 +30,7 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
 sleep 10
 
 echo "Rendering a view of the config groups.json for debugging."
-docker run --rm {{$dockerMounts}} {{$dockerEnv}} {{$dockerImage}} infrakit template {{$groupsURL}}
+docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit template {{$groupsURL}}
 
 #Try to commit - this is idempotent but don't error out and stop the cloud init script!
 echo "Commiting to infrakit $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit manager commit {{$groupsURL}})"
