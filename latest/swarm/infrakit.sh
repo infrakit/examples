@@ -40,4 +40,8 @@ sleep 10
 
 # Try to commit - this is idempotent but don't error out and stop the cloud init script!
 #echo "Commiting to infrakit $(infrakit manager commit {{$groupsURL}})"
+
+echo "Rendering a view of the config groups.json...."
+infrakit template {{$groupsURL}}
+
 echo "Commiting to infrakit $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit manager commit {{$groupsURL}})"
