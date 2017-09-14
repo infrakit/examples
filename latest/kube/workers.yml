@@ -1,0 +1,14 @@
+
+Plugin: group
+Properties:
+  ID: workers
+  Properties:
+    Allocation:
+      Size: {{ sub (var `/cluster/size`) (len (var `/cluster/manager/ips`)) }}
+    Flavor:
+      Plugin: kubernetes/manager
+      Properties:
+        InitScriptTemplateURL: {{ var `/cluster/config/root` }}/kube/workers-init.sh
+        KubeBindPort: 6443
+        KubeJoinIP: {{ var `/cluster/kube/join/ip` }}
+    Instance: {{ include `aws/workers.json` | jsonDecode | yamlEncode }}
