@@ -1,33 +1,34 @@
 {{ source `common.ikt` }}
 {
-  "Plugin": "group",
-  "Properties": {
-    "ID": "managers",
+    "Plugin": "group",
     "Properties": {
-      "Allocation": {
-        "LogicalIDs": {{ var `/cluster/manager/ips` | jsonEncode }}
-      },
-      "Flavor": {
-        "Plugin": "kubernetes/manager",
+        "ID": "managers",
         "Properties": {
-          "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/managers-init.sh",
-          "KubeAddOns": [
-            {
-              "Name": "calico",
-              "Path": "http://docs.projectcalico.org/v2.2/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml",
-              "Type": "network"
-              },
-              {
-              "Name": "kubedash",
-              "Path": "https://git.io/kube-dashboard",
-              "Type": "visualise"
-              }
-          ],
-          "KubeBindPort": 6443,
-          "KubeJoinIP": "{{ var `/cluster/join/ip` }}"
+            "Allocation": {
+                "LogicalIDs": {{ var `/cluster/manager/ips` | jsonEncode }}
+            },
+            "Flavor": {
+                "Plugin": "kubernetes/manager",
+                "Properties": {
+                    "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/managers-init.sh",
+                    "KubeAddOns": [
+                        {
+                            "Name": "calico",
+                            "Path": "http://docs.projectcalico.org/v2.2/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml",
+                            "Type": "network"
+                        },
+                        {
+                            "Name": "kubedash",
+                            "Path": "https://git.io/kube-dashboard",
+                            "Type": "visualise"
+                        }
+                    ],
+                    "KubeBindPort": 6443,
+                    "KubeJoinIP": "{{ var `/cluster/join/ip` }}",
+                    "KubeClusterID" : "{{ var `/cluster/name`}}"
+                }
+            },
+            "Instance":{{ include `aws/managers.json` }}
         }
-      },
-      "Instance":{{ include `aws/managers.json` }}
     }
-  }
 }

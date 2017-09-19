@@ -1,21 +1,22 @@
 {{ source `common.ikt` }}
 {
-  "Plugin" : "group",
-  "Properties" : {
-    "ID": "workers",
-    "Properties": {
-      "Allocation": {
-        "Size": {{ sub (var `/cluster/size`) (len (var `/cluster/manager/ips`)) }}
-      },
-      "Flavor": {
-        "Plugin": "kubernetes/manager",
+    "Plugin" : "group",
+    "Properties" : {
+        "ID": "workers",
         "Properties": {
-          "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/workers-init.sh",
-          "KubeBindPort": 6443,
-          "KubeJoinIP": "{{ var `/cluster/join/ip` }}"
+            "Allocation": {
+                "Size": {{ sub (var `/cluster/size`) (len (var `/cluster/manager/ips`)) }}
+            },
+            "Flavor": {
+                "Plugin": "kubernetes/manager",
+                "Properties": {
+                    "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/workers-init.sh",
+                    "KubeBindPort": 6443,
+                    "KubeJoinIP": "{{ var `/cluster/join/ip` }}",
+                    "KubeClusterID" : "{{ var `/cluster/name`}}"
+                }
+            },
+            "Instance": {{ include `aws/workers.json` }}
         }
-      },
-      "Instance": {{ include `aws/workers.json` }}
     }
-  }
 }
