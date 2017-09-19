@@ -1,3 +1,5 @@
 {{ source `common.ikt` }}
-
-{{ list (include `managers.yml` | yamlDecode) (include `workers.yml`|yamlDecode ) | yamlEncode}}
+[
+  (include `managers.json`),
+  (include `workers.json`)
+]
