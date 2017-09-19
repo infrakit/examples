@@ -12,4 +12,5 @@ Properties:
         InitScriptTemplateURL: {{ var `/infrakit/config/root` }}/kube/workers-init.sh
         KubeBindPort: 6443
         KubeJoinIP: {{ var `/cluster/join/ip` }}
-    Instance: {{ include `aws/workers.json` | jsonDecode | yamlEncode }}
+    Instance:
+      {{ include `aws/workers.json` | jsonDecode | yamlEncode }}

@@ -20,4 +20,5 @@ Properties:
           Type: visualise
         KubeBindPort: 6443
         KubeJoinIP: {{ var `/cluster/join/ip` }}
-    Instance: {{ include `aws/managers.json` | jsonDecode | yamlEncode}}
+    Instance:
+      {{ include `aws/managers.json` | jsonDecode | yamlEncode}}
