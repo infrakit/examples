@@ -1,3 +1,4 @@
+{{ source `common.ikt` }}
 
 Plugin: group
 Properties:
