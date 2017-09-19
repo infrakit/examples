@@ -1,2 +1,1 @@
-- {{ include `managers.yml` | trim }}
-- {{ include `workers.yml`  | trim }}
+{{ list (include `managers.yml` | yamlDecode) (include `workers.yml`|yamlDecode ) | yamlEncode}}
