@@ -1,5 +1,5 @@
 {{ source `common.ikt` }}
 [
-  (include `managers.json`),
-  (include `workers.json`)
+  {{include `managers.json`}},
+  {{include `workers.json`}}
 ]
