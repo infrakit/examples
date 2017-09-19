@@ -9,7 +9,7 @@ Properties:
     Flavor:
       Plugin: kubernetes/manager
       Properties:
-        InitScriptTemplateURL: {{ var `/cluster/config/root` }}/kube/managers-init.sh
+        InitScriptTemplateURL: {{ var `/infrakit/config/root` }}/kube/managers-init.sh
         KubeAddOns:
         - Name: calico
           Path: http://docs.projectcalico.org/v2.2/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml

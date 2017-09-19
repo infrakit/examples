@@ -7,6 +7,7 @@
 {{ var "/cluster/join/ip" "172.31.16.102" }}
 {{ if empty (var "/local/docker/engine/labels") }}{{ var "/local/docker/engine/labels" (jsonDecode "[]") }}{{end}}
 
+
 {{/*
 Integration with the metadata plugin here -- note the values here are from the cloudformation metadata
 if not available, we expect to come from command line or some other means -- see vpc.cfn boostrap node's userdata

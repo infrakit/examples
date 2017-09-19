@@ -9,7 +9,7 @@ Properties:
     Flavor:
       Plugin: kubernetes/manager
       Properties:
-        InitScriptTemplateURL: {{ var `/cluster/config/root` }}/kube/workers-init.sh
+        InitScriptTemplateURL: {{ var `/infrakit/config/root` }}/kube/workers-init.sh
         KubeBindPort: 6443
-        KubeJoinIP: {{ var `/cluster/kube/join/ip` }}
+        KubeJoinIP: {{ var `/cluster/join/ip` }}
     Instance: {{ include `aws/workers.json` | jsonDecode | yamlEncode }}
