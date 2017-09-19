@@ -5,7 +5,8 @@ Properties:
   ID: managers
   Properties:
     Allocation:
-      LogicalIDs: {{ var `/cluster/manager/ips` | yamlEncode }}
+      LogicalIDs:
+        {{ var `/cluster/manager/ips` | yamlEncode }}
     Flavor:
       Plugin: kubernetes/manager
       Properties:
