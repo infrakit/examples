@@ -16,7 +16,7 @@ Instance plugin config for managers on AWS
             "BlockDeviceMappings": null,
             "EbsOptimized": null,
             "IamInstanceProfile": {
-                "Arn": "{{ (var `/local/iam`).InstanceProfileArn }}"
+                "Arn": "{{ (var `/local/iam`).InstanceProfileArn }}",
                 "Name": null
             },
             "ImageId": "{{ var `/local/amiID` }}",
