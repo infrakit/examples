@@ -1,2 +1,2 @@
-- {{ include `managers.yml` }}
-- {{ include `workers.yml` }}
+- {{ include `managers.yml` | trim }}
+- {{ include `workers.yml`  | trim }}
