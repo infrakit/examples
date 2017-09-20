@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "InfraKit Demo - builds a new VPC with a Docker Swarm",
+    "Description": "InfraKit Demo - builds a new Kubernetes cluster on top of Docker Swarm",
 
     "Parameters": {
         "InfrakitConfigRoot" : {
