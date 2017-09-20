@@ -1,0 +1,26 @@
+{{ source "../common.ikt" }}
+
+{
+    "Managers" : {
+        "Plugin": "simulator/compute",
+        "Properties": {
+            "Tags": {
+                "infrakit.clusterName": "{{ var `/cluster/name` }}",
+                "infrakit.role" : "managers",
+                "Name": "{{ var `/cluster/name` }}-manager"
+            },
+            "Custom" : {}
+        }
+    },
+    "Workers"  : {
+        "Plugin": "simulator/compute",
+        "Properties": {
+            "Tags": {
+                "infrakit.clusterName": "{{ var `/cluster/name` }}",
+                "infrakit.role" : "workers",
+                "Name": "{{ var `/cluster/name` }}-worker"
+            },
+            "Custom" : {}
+        }
+    }
+}

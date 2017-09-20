@@ -3,7 +3,6 @@
 Config for workers on AWS
 
 */}}
-{{ source `aws.ikt` }}
 {
     "Plugin": "aws/ec2-instance",
     "Properties": {

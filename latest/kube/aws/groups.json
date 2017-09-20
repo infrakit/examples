@@ -29,3 +29,9 @@ AWS specific - This is where we introspect the environment and export the values
 {{ var "/local/subnetID" $subnetID }}
 {{ var "/local/vpcID" $vpcID }}
 {{ var "/local/iam" $iam }} {{/* an object */}}
+
+
+{
+    "Managers" : {{ include "manager.json" }},
+    "Workers"  : {{ include "worker.json" }}
+}

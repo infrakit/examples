@@ -3,9 +3,6 @@ set -o errexit
 set -o nounset
 set -o xtrace
 
-{{/* Install Docker */}}
-{{ include "install-docker.sh" }}
-
 {{/* Install Kubeadm */}}
 {{ include "install-kubeadm.sh" }}
 

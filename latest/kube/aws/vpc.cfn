@@ -1,12 +1,12 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "InfraKit Demo - builds a new VPC for Kubernetes",
+    "Description": "InfraKit Demo - builds a new VPC with a Docker Swarm",
 
     "Parameters": {
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/kube"
+            "Default" : "https://chungers.github.io/examples/latest/swarm"
         },
         "PreinstalledDockerAMI": {
             "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
@@ -41,7 +41,7 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/kube"
+            "Default" : "https://chungers.github.io/examples/latest/swarm"
         },
         "MetadataExportTemplate" : {
             "Type" : "String",
@@ -246,6 +246,12 @@
                         "FromPort": "24864",
                         "ToPort": "24864",
                         "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "6443",
+                        "ToPort": "6443",
+                        "CidrIp": "172.31.0.0/16"
                     }
                 ]
             }
@@ -410,7 +416,7 @@
                             "docker run --rm ", {"Ref":"Infrakit"} ," infrakit template -f ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
-                               " --var /cluster/size=", {"Ref":"ClusterSize"},
+                               " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                                " --var /provider/image/hasDocker=yes",
@@ -422,7 +428,7 @@
                 "Tags" : [
                     {
                         "Key" : "Name",
-                        "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "Management" ] ] }
+                        "Value" : { "Fn::Join": [ "-", [ { "Ref": "AWS::StackName"}, "Bootstrap" ] ] }
                     },
                     {
                         "Key" : "infrakit.scope",
@@ -430,7 +436,7 @@
                     },
                     {
                         "Key" : "infrakit.group",
-                        "Value" : "kube-manager"
+                        "Value" : "swarm-managers"
                     },
                     {
                         "Key" : "infrakit.config_sha",
@@ -438,7 +444,7 @@
                     },
                     {
                         "Key" : "infrakit.role",
-                        "Value" : "infrakit"
+                        "Value" : "managers"
                     }
                 ]
             }
