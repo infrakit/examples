@@ -6,7 +6,7 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/swarm"
+            "Default" : "https://chungers.github.io/examples/latest/kube"
         },
         "PreinstalledDockerAMI": {
             "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
@@ -37,11 +37,6 @@
             "Type" : "String",
             "Description" : "Private IP of the bootstrap node",
             "Default" : "172.31.16.101"
-        },
-        "InfrakitConfigRoot" : {
-            "Type" : "String",
-            "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/swarm"
         },
         "MetadataExportTemplate" : {
             "Type" : "String",
@@ -416,7 +411,7 @@
                             "docker run --rm ", {"Ref":"Infrakit"} ," infrakit template -f ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
-                               " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
+                               " --var /cluster/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                                " --var /provider/image/hasDocker=yes",
@@ -436,7 +431,7 @@
                     },
                     {
                         "Key" : "infrakit.group",
-                        "Value" : "swarm-managers"
+                        "Value" : "kube-managers"
                     },
                     {
                         "Key" : "infrakit.config_sha",

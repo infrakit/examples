@@ -12,7 +12,7 @@ if not available, we expect to come from command line or some other means -- see
 */}}
 {{ if metadata "aws" }}
 {{ var "/cluster/name"                   ( metadata "aws/export/cfn/stack" )}}
-{{ var "/cluster/swarm/size"             ( metadata "aws/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
+{{ var "/cluster/size"             ( metadata "aws/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
 {{ var "/infrakit/config/root"           ( metadata "aws/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
 {{ var "/infrakit/metadata/configURL"    ( metadata "aws/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
 {{ var "/provider/image/hasDocker"       ( metadata "aws/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
