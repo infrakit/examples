@@ -35,52 +35,50 @@ the instances it manages reside.
                 },
                 "Flavor": {
 		    "Plugin" : "combo",
-		    "Properties" : {
-			"Flavors" : [
-			    {
-				"Plugin": "swarm/manager",
-				"Properties": {
-				    "Attachments" : {
-					"{{index $managerIPs 0}}" : [
-					    { "ID":"{{index $managerIPs 0}}", "Type":"ebs" }
-					],
-					"{{index $managerIPs 1}}" : [
-					    { "ID":"{{index $managerIPs 1}}", "Type":"ebs" }
-					],
-					"{{index $managerIPs 2}}" : [
-					    { "ID":"{{index $managerIPs 2}}", "Type":"ebs" }
-					]
-				    },
-				    "InitScriptTemplateURL": "{{ $managerInit }}",
-				    "SwarmJoinIP": "{{ $swarmLeaderIP }}",
-				    "Docker" : {
-					"Host" : "{{ $dockerEngine }}"
-				    }
-				}
-			    },
-			    {
-				"Plugin": "kubernetes/manager",
-				"Properties": {
-				    "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/kube-managers-init.sh",
-				    "KubeAddOns": [
-					{
-					    "Name": "calico",
-					    "Path": "http://docs.projectcalico.org/v2.2/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml",
-					    "Type": "network"
-					},
-					{
-					    "Name": "kubedash",
-					    "Path": "https://git.io/kube-dashboard",
-					    "Type": "visualise"
-					}
+		    "Properties" : [
+			{
+			    "Plugin": "swarm/manager",
+			    "Properties": {
+				"Attachments" : {
+				    "{{index $managerIPs 0}}" : [
+					{ "ID":"{{index $managerIPs 0}}", "Type":"ebs" }
 				    ],
-				    "KubeBindPort": 6443,
-				    "KubeJoinIP": "{{ var `/cluster/kube/join/ip` }}",
-				    "KubeClusterID" : "{{ var `/cluster/name`}}"
+				    "{{index $managerIPs 1}}" : [
+					{ "ID":"{{index $managerIPs 1}}", "Type":"ebs" }
+				    ],
+				    "{{index $managerIPs 2}}" : [
+					{ "ID":"{{index $managerIPs 2}}", "Type":"ebs" }
+				    ]
+				},
+				"InitScriptTemplateURL": "{{ $managerInit }}",
+				"SwarmJoinIP": "{{ $swarmLeaderIP }}",
+				"Docker" : {
+				    "Host" : "{{ $dockerEngine }}"
 				}
 			    }
-			]
-		    }
+			},
+			{
+			    "Plugin": "kubernetes/manager",
+			    "Properties": {
+				"InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/kube-managers-init.sh",
+				"KubeAddOns": [
+				    {
+					"Name": "calico",
+					"Path": "http://docs.projectcalico.org/v2.2/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml",
+					"Type": "network"
+				    },
+				    {
+					"Name": "kubedash",
+					"Path": "https://git.io/kube-dashboard",
+					"Type": "visualise"
+				    }
+				],
+				"KubeBindPort": 6443,
+				"KubeJoinIP": "{{ var `/cluster/kube/join/ip` }}",
+				"KubeClusterID" : "{{ var `/cluster/name`}}"
+			    }
+			}
+		    ]
                 },
                 "Instance": {{ $myGroups.Managers | jsonEncode }}
             }
