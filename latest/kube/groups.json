@@ -95,8 +95,7 @@ the instances it manages reside.
                 },
                 "Flavor": {
 		    "Plugin" : "combo",
-		    "Properties" : {
-			"Flavors" : [
+		    "Properties" : [
 			    {
 				"Plugin": "swarm/worker",
 				"Properties": {
@@ -118,8 +117,6 @@ the instances it manages reside.
 
 			    }
 			]
-		    }
-
                 },
                 "Instance": {{ $myGroups.Workers | jsonEncode }}
             }
