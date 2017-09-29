@@ -107,7 +107,7 @@ the instances it manages reside.
 				}
 			    },
 			    {
-				"Plugin": "kubernetes/manager",
+				"Plugin": "kubernetes/worker",
 				"Properties": {
 				    "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/kube-workers-init.sh",
 				    "KubeBindPort": 6443,
