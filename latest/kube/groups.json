@@ -60,7 +60,7 @@ the instances it manages reside.
 			{
 			    "Plugin": "kubernetes/manager",
 			    "Properties": {
-				"InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/kube-managers-init.sh",
+				"InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube-managers-init.sh",
 				"KubeAddOns": [
 				    {
 					"Name": "calico",
@@ -109,7 +109,7 @@ the instances it manages reside.
 			    {
 				"Plugin": "kubernetes/worker",
 				"Properties": {
-				    "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube/kube-workers-init.sh",
+				    "InitScriptTemplateURL": "{{ var `/infrakit/config/root` }}/kube-workers-init.sh",
 				    "KubeBindPort": 6443,
 				    "KubeJoinIP": "{{ var `/cluster/kube/join/ip` }}",
 				    "KubeClusterID" : "{{ var `/cluster/name`}}"
