@@ -23,6 +23,7 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
        -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
        -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
        -e INFRAKIT_MANAGER_BACKEND=swarm \
+       -e INFRAKIT_FLAVOR_KUBERNETES_CONFIG_DIR=/infrakit/kube \
        -e INFRAKIT_TAILER_PATH=/infrakit/logs/infrakit.log \
        {{$dockerImage}} \
        infrakit plugin start manager group aws combo swarm kubernetes time \
