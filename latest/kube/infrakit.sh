@@ -30,7 +30,7 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
        --log 5 --log-debug-V 900
 
 # Need a bit of time for the leader to discover itself
-sleep 10
+sleep 60
 
 echo "Rendering a view of the config groups.json for debugging."
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit template {{$groupsURL}}
