@@ -6,7 +6,7 @@ set -o xtrace
 {{/* Install Kubeadm */}}
 {{ include "install-kubeadm.sh" }}
 
-kubeadm init --token {{ KUBEADM_JOIN_TOKEN }}
+kubeadm init --skip-preflight-checks --token {{ KUBEADM_JOIN_TOKEN }}
 export KUBECONFIG=/etc/kubernetes/admin.conf
 {{ if ADDON "network" }}
     kubectl apply -f {{ ADDON "network" }}
