@@ -6,16 +6,14 @@ set -o xtrace
 
 {{ source "common.ikt" }}
 
-
-##### Set up volumes ############################################################
+##### Set up volumes #################################################################
 # Only for managers
 {{ if not (var "/local/infrakit/role/worker") }} {{ include "setup-volume.sh" }} {{ end }}
 
-##### Set up Docker #############################################################
+echo ##### Set up Docker #############################################################
+{{ if var "/local/install/docker" }} {{ include "install-docker.sh" }} {{ end }}
 
-{{/* Install Docker */}}{{ if var "/local/install/docker" }} {{ include "install-docker.sh" }} {{ end }}
-
-{{/* Label the Docker Engine */}}
+echo #### Label the engine ###########################################################
 {{ $dockerLabels := var "/local/docker/engine/labels" }}
 {{ if not (eq 0 (len $dockerLabels)) }}
 mkdir -p /etc/docker
@@ -28,19 +26,17 @@ kill -s HUP $(cat /var/run/docker.pid)  {{/* Reload the engine labels */}}
 sleep 5
 {{ end }}
 
-##### Set up Docker Swarm Mode  ##################################################
-
+echo ##### Set up Docker Swarm Mode  ##################################################
 {{ if not (var "/cluster/swarm/initialized") }}
 docker swarm init --advertise-addr {{ var "/cluster/swarm/join/ip" }}  # starts :2377
 {{ end }}
 
-##### Infrakit Services  #########################################################
-
+echo ##### Infrakit Services  #########################################################
 {{ if not (var "/local/infrakit/role/worker") }}
 {{ include "infrakit.sh" }}
 {{ end }}{{/* if running infrakit */}}
 
-##### Joining Swarm  #############################################################
+echo ##### Joining Swarm  #############################################################
 {{ if var "/cluster/swarm/initialized" }}
 sleep 5
 echo "Joining swarm"

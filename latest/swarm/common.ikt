@@ -5,23 +5,17 @@
 {{ var "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
 {{ if empty (var "/local/docker/engine/labels") }}{{ var "/local/docker/engine/labels" (jsonDecode "[]") }}{{end}}
 
-{{ var "/infrakit/home" "/infrakit" }}
-{{ var "/infrakit/docker/options/mount" (cat "-v /var/run/docker.sock:/var/run/docker.sock -v" (cat (var "/infrakit/home") ":/infrakit/" | nospace)) }}
-{{ var "/infrakit/docker/options/env" "-e INFRAKIT_HOME=/infrakit -e INFRAKIT_PLUGINS_DIR=/infrakit/plugins" }}
-
 {{/*
 Integration with the metadata plugin here -- note the values here are from the cloudformation metadata
 if not available, we expect to come from command line or some other means -- see vpc.cfn boostrap node's userdata
 */}}
-{{ if metadata "var" }}
-{{ var "/cluster/name"                   ( metadata "var/export/cfn/stack" )}}
-{{ var "/cluster/swarm/size"             ( metadata "var/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
-{{ var "/provider/image/hasDocker"       ( metadata "var/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
-{{ var "/infrakit/config/root"           ( metadata "var/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
-{{ var "/infrakit/docker/image"          ( metadata "var/export/cfn/config/Parameters/InfrakitCore/ParameterValue" )}}
-{{ var "/infrakit/instance/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitInstancePlugin/ParameterValue" )}}
-{{ var "/infrakit/metadata/docker/image" ( metadata "var/export/cfn/config/Parameters/InfrakitMetadataPlugin/ParameterValue" )}}
-{{ var "/infrakit/metadata/configURL"    ( metadata "var/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
+{{ if metadata "aws" }}
+{{ var "/cluster/name"                   ( metadata "aws/export/cfn/stack" )}}
+{{ var "/cluster/swarm/size"             ( metadata "aws/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
+{{ var "/infrakit/config/root"           ( metadata "aws/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
+{{ var "/infrakit/metadata/configURL"    ( metadata "aws/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
+{{ var "/provider/image/hasDocker"       ( metadata "aws/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
+{{ var "/infrakit/docker/image"          ( metadata "aws/export/cfn/config/Parameters/Infrakit/ParameterValue" )}}
 {{ end }}
 
 {{ var "/local/install/docker" (var "/provider/image/hasDocker" | default "no" | eq "no" ) }}

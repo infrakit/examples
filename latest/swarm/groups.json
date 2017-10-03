@@ -13,16 +13,16 @@ the instances it manages reside.
 {{ source "common.ikt" }} {{/* a common template included here to define global variables */}}
 
 {{/* Local variables */}}
-{{ $swarmLeaderIP := var "/cluster/swarm/join/ip" }}
-{{ $managerIPs := var "/cluster/swarm/manager/ips" }}
+{{ $swarmLeaderIP := var `/cluster/swarm/join/ip` }}
+{{ $managerIPs := var `/cluster/swarm/manager/ips` }}
 
-{{ $workerSize := sub (var "/cluster/swarm/size") (len $managerIPs) }}
-{{ $dockerEngine := "unix:///var/run/docker.sock" }} {{/* for this flavor to connect to */}}
+{{ $workerSize := sub (var `/cluster/swarm/size`) (len $managerIPs) }}
+{{ $dockerEngine := `unix:///var/run/docker.sock` }} {{/* for this flavor to connect to */}}
 
-{{ $managerInit := cat (var "/infrakit/config/root") "/manager-init.sh" | nospace }}
-{{ $workerInit := cat (var "/infrakit/config/root") "/worker-init.sh" | nospace }}
+{{ $managerInit := cat (var `/infrakit/config/root`) `/manager-init.sh` | nospace }}
+{{ $workerInit := cat (var `/infrakit/config/root`) `/worker-init.sh` | nospace }}
 
-{{ $myGroups := include (cat (var "/cluster/provider") "/groups.json" | nospace) | jsonDecode }}
+{{ $myGroups := include (cat (var `/cluster/provider`) `/groups.json` | nospace) | jsonDecode }}
 
 [
     {
@@ -34,7 +34,7 @@ the instances it manages reside.
                     "LogicalIDs": {{ $managerIPs | jsonEncode }}
                 },
                 "Flavor": {
-                    "Plugin": "flavor-swarm/manager",
+                    "Plugin": "swarm/manager",
                     "Properties": {
                         "Attachments" : {
                             "{{index $managerIPs 0}}" : [
@@ -68,7 +68,7 @@ the instances it manages reside.
                     "Size": {{ $workerSize }}
                 },
                 "Flavor": {
-                    "Plugin": "flavor-swarm/worker",
+                    "Plugin": "swarm/worker",
                     "Properties": {
                         "InitScriptTemplateURL": "{{ $workerInit }}",
                         "SwarmJoinIP": "{{ $swarmLeaderIP }}",

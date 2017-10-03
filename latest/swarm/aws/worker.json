@@ -4,40 +4,40 @@ Config for workers on AWS
 
 */}}
 {
-    "Plugin": "instance-aws/ec2-instance",
+    "Plugin": "aws/ec2-instance",
     "Properties": {
         "Tags": {
-            "infrakit.clusterName": "{{ var "/cluster/name" }}",
+            "infrakit.clusterName": "{{ var `/cluster/name` }}",
             "infrakit.role" : "workers",
-            "Name": "{{ var "/cluster/name" }}-worker"
+            "Name": "{{ var `/cluster/name` }}-worker"
         },
         "RunInstancesInput": {
             "BlockDeviceMappings": null,
             "DisableApiTermination": null,
             "EbsOptimized": null,
             "IamInstanceProfile": null,
-            "ImageId": "{{ var "/local/amiID" }}",
+            "ImageId": "{{ var `/local/amiID` }}",
             "InstanceInitiatedShutdownBehavior": null,
-            "InstanceType": "{{ var "/local/instanceType" }}",
-            "KeyName": "{{ var "/local/keyName" }}",
+            "InstanceType": "{{ var `/local/instanceType` }}",
+            "KeyName": "{{ var `/local/keyName` }}",
             "NetworkInterfaces": [
                 {
                     "AssociatePublicIpAddress": true,
                     "DeleteOnTermination": true,
                     "DeviceIndex": 0,
                     "Groups": [
-                        "{{ var "/local/securityGroupIDs" }}"
+                        "{{ var `/local/securityGroupIDs` }}"
                     ],
                     "NetworkInterfaceId": null,
                     "PrivateIpAddress": null,
                     "PrivateIpAddresses": null,
                     "SecondaryPrivateIpAddressCount": null,
-                    "SubnetId": "{{ var "/local/subnetID" }}"
+                    "SubnetId": "{{ var `/local/subnetID` }}"
                 }
             ],
             "Placement": {
                 "Affinity": null,
-                "AvailabilityZone": "{{ var "/local/availabilityZone" }}",
+                "AvailabilityZone": "{{ var `/local/availabilityZone` }}",
                 "Tenancy": null
             },
             "PrivateIpAddress": null,

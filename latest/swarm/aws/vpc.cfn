@@ -3,6 +3,11 @@
     "Description": "InfraKit Demo - builds a new VPC with a Docker Swarm",
 
     "Parameters": {
+        "InfrakitConfigRoot" : {
+            "Type" : "String",
+            "Description" : "Root URL of the bootscript",
+            "Default" : "https://infrakit.github.io/examples/latest/swarm"
+        },
         "PreinstalledDockerAMI": {
             "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
             "Type": "String",
@@ -43,20 +48,10 @@
             "Description" : "URL to configure the metadata plugin",
             "Default" : "https://infrakit.github.io/examples/latest/metadata/aws/export.ikt"
         },
-        "InfrakitCore" : {
+        "Infrakit" : {
             "Type" : "String",
             "Description" : "Docker image of Infrakit",
             "Default" : "infrakit/devbundle:latest"
-        },
-        "InfrakitInstancePlugin" : {
-            "Type" : "String",
-            "Description" : "Docker image of Infrakit AWS instance plugin",
-            "Default" : "infrakit/aws:latest"
-        },
-        "InfrakitMetadataPlugin" : {
-            "Type" : "String",
-            "Description" : "Docker image of Infrakit AWS metadata plugin",
-            "Default" : "infrakit/aws:latest"
         }
     },
 
@@ -412,16 +407,14 @@
                             {
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
-                            "docker run --rm ", {"Ref":"InfrakitCore"} ," infrakit template -f ",
+                            "docker run --rm ", {"Ref":"Infrakit"} ," infrakit template -f ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
                                " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
-                               " --var /provider/image/hasDocker=yes",
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
-                               " --var /infrakit/docker/image=", {"Ref":"InfrakitCore"},
-                               " --var /infrakit/instance/docker/image=", {"Ref":"InfrakitInstancePlugin"},
-                               " --var /infrakit/metadata/docker/image=", {"Ref":"InfrakitMetadataPlugin"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
+                               " --var /provider/image/hasDocker=yes",
+                               " --var /infrakit/docker/image=", {"Ref":"Infrakit"},
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
