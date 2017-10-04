@@ -14,8 +14,6 @@ echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$docke
 
 alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'
 
-{{ $groupsURL := cat (var `/infrakit/config/root`) `/groups.json` | nospace }}
-
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
        -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
@@ -33,7 +31,7 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
 sleep 60
 
 echo "Rendering a view of the config groups.json for debugging."
-docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit template {{$groupsURL}}
+docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit template {{var `/infrakit/config/root`}}/groups.json
 
 #Try to commit - this is idempotent but don't error out and stop the cloud init script!
-echo "Commiting to infrakit $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit manager commit {{$groupsURL}})"
+echo "Commiting to infrakit $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit manager commit {{var `/infrakit/config/root`}}/groups.json)"
