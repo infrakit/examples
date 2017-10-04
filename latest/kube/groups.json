@@ -76,7 +76,8 @@ the instances it manages reside.
 				"KubeBindPort": 6443,
 				"KubeJoinIP": "{{ var `/cluster/kube/join/ip` }}",
 				"KubeClusterID" : "{{ var `/cluster/name`}}",
-				"SkipManagerValidation" : true
+				"SkipManagerValidation" : true,
+				"ControlPlane" : [ "{{ index $managerIPs 0 }}" ]
 			    }
 			}
 		    ]
