@@ -403,7 +403,7 @@
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
                             "docker run --rm ", {"Ref":"Infrakit"},
-                            " infrakit util init --group kube-managers --start combo --start swarm --start kubernetes ",
+                            " infrakit util init --group-id kube-managers --start combo --start swarm --start kubernetes ",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
                                " --var /cluster/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
