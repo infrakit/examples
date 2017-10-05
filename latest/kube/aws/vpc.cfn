@@ -129,10 +129,12 @@
 
         "AMISelector" : {
             "no" : {
+                "hasDocker" : "no",
                 "ami" : "AWSRegionArch2AMIUbuntu1604NoDocker",
                 "userdata" : "wget -qO- https://get.docker.com/ | sh \n"
             },
             "yes" : {
+                "hasDocker" : "yes",
                 "ami" : "AWSRegionArch2AMI",
                 "userdata" : "# Docker pre-installed \n"
             }
@@ -402,7 +404,7 @@
                             {
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
-                            "docker swarm init\n", "mkdir -p /infrakit\n",
+                            "mkdir -p /infrakit\n",
                             "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit ",
 			    {"Ref":"Infrakit"},
                             " infrakit util init --group-id kube-managers --start combo --start swarm --start kubernetes ",
@@ -410,7 +412,9 @@
                                " --var /cluster/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
-                               " --var /provider/image/hasDocker=yes",
+                               " --var /provider/image/hasDocker=", {
+                                       "Fn::FindInMap": ["AMISelector", { "Ref":"PreinstalledDockerAMI" }, "hasDocker"]
+                                       },
                                " --var /infrakit/docker/image=", {"Ref":"Infrakit"}, " ",
                                {"Ref":"InfrakitConfigRoot"}, "/groups.json",
                                " | tee /var/lib/infrakit.boot | sh \n"
