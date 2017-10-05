@@ -403,7 +403,7 @@
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
                             "docker swarm init\n", "mkdir -p /infrakit\n",
-                            "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit",
+                            "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit ",
 			    {"Ref":"Infrakit"},
                             " infrakit util init --group-id kube-managers --start combo --start swarm --start kubernetes ",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
