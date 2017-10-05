@@ -33,7 +33,7 @@ docker swarm init --advertise-addr {{ var "/cluster/swarm/join/ip" }}  # starts 
 {{ else }}
 echo ##### Joining Swarm  #############################################################
 sleep 5
-docker swarm join --token {{ var "/local/docker/swarm/join/token" }} {{ var "/local/docker/swarm/join/addr" }}
+echo "Joining Swarm $(docker swarm join --token {{ var "/local/docker/swarm/join/token" }} {{ var "/local/docker/swarm/join/addr" }})"
 {{ end }}
 
 echo ##### Infrakit Services  #########################################################
