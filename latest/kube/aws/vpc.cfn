@@ -402,14 +402,15 @@
                             {
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
-                            "docker run --rm ", {"Ref":"Infrakit"} ," infrakit template -f ",
-                               {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
+                            "docker run --rm ", {"Ref":"Infrakit"},
+                            " infrakit util init --group kube-managers --start combo --start swarm --start kubernetes ",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
                                " --var /cluster/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
                                " --var /provider/image/hasDocker=yes",
                                " --var /infrakit/docker/image=", {"Ref":"Infrakit"},
+                               {"Ref":"InfrakitConfigRoot"}, "/groups.json",
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
