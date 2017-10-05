@@ -47,5 +47,4 @@ if [ "$stopped" -eq "1" ]; then
     service docker start
 fi
 
-
 fi # setup
