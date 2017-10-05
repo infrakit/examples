@@ -29,11 +29,11 @@ sleep 5
 echo ##### Set up Docker Swarm Mode  ##################################################
 {{ if not (var "/cluster/swarm/initialized") }}
 echo ##### Initialize Swarm  #############################################################
-docker swarm init --advertise-addr {{ var "/cluster/swarm/join/ip" }}  # starts :2377
+echo "Init swarm: $(docker swarm init --advertise-addr {{ var "/cluster/swarm/join/ip" }})"  # starts :2377
 {{ else }}
 echo ##### Joining Swarm  #############################################################
 sleep 5
-echo "Joining Swarm $(docker swarm join --token {{ var "/local/docker/swarm/join/token" }} {{ var "/local/docker/swarm/join/addr" }})"
+echo "Join Swarm: $(docker swarm join --token {{ var "/local/docker/swarm/join/token" }} {{ var "/local/docker/swarm/join/addr" }})"
 {{ end }}
 
 echo ##### Infrakit Services  #########################################################
