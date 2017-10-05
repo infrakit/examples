@@ -69,7 +69,7 @@ the instances it manages reside.
 				    },
 				    {
 					"Name": "kubedash",
-					"Path": "https://git.io/kube-dashboard",
+					"Path": "https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml",
 					"Type": "visualise"
 				    }
 				],
