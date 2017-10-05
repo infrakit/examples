@@ -23,7 +23,7 @@ cat << EOF > /etc/docker/daemon.json
 }
 EOF
 kill -s HUP $(cat /var/run/docker.pid)  {{/* Reload the engine labels */}}
-sleep 5
+sleep 30
 {{ end }}
 
 echo ##### Set up Docker Swarm Mode  ##################################################
