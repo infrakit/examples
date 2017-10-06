@@ -2,7 +2,7 @@
 
 {{ var "/cluster/provider" "aws" }}
 {{ var "/cluster/swarm/join/ip" "172.31.16.101" }}
-{{ var "/cluster/kube/join/ip" "172.31.16.102" }}
+{{ var "/cluster/kube/join/ip" "172.31.16.101" }}
 {{ var "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
 {{ if empty (var "/local/docker/engine/labels") }}{{ var "/local/docker/engine/labels" (jsonDecode "[]") }}{{end}}
 
