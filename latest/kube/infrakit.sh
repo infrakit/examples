@@ -15,6 +15,13 @@ echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$docke
 
 alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'
 
+# Infrakit events - tailing the cloud init log
+docker run -d --restart always --name infrakit-tailer {{ $dockerMounts }} {{ $dockerEnvs }} \
+       -v /var/log/:/var/log \
+       -e INFRAKIT_TAILER_PATH=/var/log/cloud-init-output.log \
+       {{$dockerImage}} \
+       infrakit plugin start tailer \
+
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
        -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
@@ -23,7 +30,6 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
        -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
        -e INFRAKIT_MANAGER_BACKEND=swarm \
        -e INFRAKIT_ADVERTISE={{ var `/local/swarm/manager/logicalID` }}:24864 \
-       -e INFRAKIT_TAILER_PATH=/infrakit/logs/infrakit.log \
        {{$dockerImage}} \
        infrakit plugin start manager group aws combo swarm kubernetes time \
        --log 5 --log-debug-V 900
