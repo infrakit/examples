@@ -10,6 +10,8 @@ set -o xtrace
 {{ var "/cluster/swarm/initialized" (ne 0 INDEX.Sequence) }}
 {{ var "/cluster/swarm/join/ip" INSTANCE_LOGICAL_ID }}
 
+{{ var "/local/swarm/manager/logicalID" INSTANCE_LOGICAL_ID }}
+
 {{ var "/local/docker/engine/labels" INFRAKIT_LABELS }}
 {{ var "/local/docker/swarm/join/addr" SWARM_MANAGER_ADDR }}
 {{ var "/local/docker/swarm/join/token" SWARM_JOIN_TOKENS.Manager }}
