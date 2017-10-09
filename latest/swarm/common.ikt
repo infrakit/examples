@@ -2,21 +2,24 @@
 
 {{ var "/cluster/provider" "aws" }}
 {{ var "/cluster/swarm/join/ip" "172.31.16.101" }}
+{{ var "/cluster/kube/join/ip" "172.31.16.101" }}
 {{ var "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
 {{ if empty (var "/local/docker/engine/labels") }}{{ var "/local/docker/engine/labels" (jsonDecode "[]") }}{{end}}
 
 {{/*
-Integration with the metadata plugin here -- note the values here are from the cloudformation metadata
-if not available, we expect to come from command line or some other means -- see vpc.cfn boostrap node's userdata
+Integration with the metadata plugin here.
+See infrakit.sh when booting up, we store the variables from cloudformation
+in the vars metadata plugin so that the user-entered values like cluster size can be
+queried later even after the bootstrapping (cloudformation) completes.
 */}}
-{{ if metadata "aws" }}
-{{ var "/cluster/name"                   ( metadata "aws/export/cfn/stack" )}}
-{{ var "/cluster/swarm/size"             ( metadata "aws/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
-{{ var "/infrakit/config/root"           ( metadata "aws/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
-{{ var "/infrakit/metadata/configURL"    ( metadata "aws/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
-{{ var "/provider/image/hasDocker"       ( metadata "aws/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
-{{ var "/infrakit/docker/image"          ( metadata "aws/export/cfn/config/Parameters/Infrakit/ParameterValue" )}}
+{{ if metadata `vars` }}
+{{ var `/cluster/name`                ( metadata `vars/cluster/name` )}}
+{{ var `/cluster/size`                ( metadata `vars/cluster/size` )}}
+{{ var `/infrakit/config/root`        ( metadata `vars/infrakit/config/root` )}}
+{{ var `/infrakit/metadata/configURL` ( metadata `vars/infrakit/metadata/configURL` ) }}
+{{ var `/infrakit/docker/image`       ( metadata `vars/infrakit/docker/image` )}}
+{{ var `/provider/image/hasDocker`    ( metadata `vars/provider/image/hasDocker` )}}
 {{ end }}
 
-{{ var "/local/install/docker" (var "/provider/image/hasDocker" | default "no" | eq "no" ) }}
-{{ var "/local/docker/user" "ubuntu" }}
+{{ var `/local/install/docker` (var `/provider/image/hasDocker` | default `no` | eq `no` ) }}
+{{ var `/local/docker/user` `ubuntu` }}

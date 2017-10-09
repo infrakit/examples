@@ -28,7 +28,7 @@ the instances it manages reside.
     {
         "Plugin": "group",
         "Properties": {
-            "ID": "swarm-managers",
+            "ID": "managers",
             "Properties": {
                 "Allocation": {
                     "LogicalIDs": {{ $managerIPs | jsonEncode }}
@@ -62,7 +62,7 @@ the instances it manages reside.
     {
         "Plugin": "group",
         "Properties": {
-            "ID": "swarm-workers",
+            "ID": "workers",
             "Properties": {
                 "Allocation": {
                     "Size": {{ $workerSize }}
