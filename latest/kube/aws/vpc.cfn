@@ -6,7 +6,7 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://raw.githubusercontent.com/infrakit/examples/master/latest/kube"
+            "Default" : "https://raw.githubusercontent.com/chungers/examples/blocker/latest/kube"
         },
         "PreinstalledDockerAMI": {
             "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
