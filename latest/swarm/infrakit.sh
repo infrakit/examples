@@ -41,6 +41,7 @@ docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
        cluster/size={{ var `/cluster/size` }} \
        infrakit/config/root={{ var `/infrakit/config/root` }} \
        infrakit/docker/image={{ var `/infrakit/docker/image` }} \
+       infrakit/metadata/configURL={{ var `/infrakit/metadata/configURL` }} \
        provider/image/hasDocker={{ var `/provider/image/hasDocker` }} \
 
 
