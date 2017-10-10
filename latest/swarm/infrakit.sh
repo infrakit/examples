@@ -28,7 +28,7 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
        -e INFRAKIT_ADVERTISE={{ var `/local/swarm/manager/logicalID` }}:24864 \
        -e INFRAKIT_TAILER_PATH=/var/log/cloud-init-output.log \
        {{$dockerImage}} \
-       infrakit plugin start manager group vars aws combo swarm time tailer ingress \
+       infrakit plugin start manager group vars aws combo swarm time tailer ingress kubernetes \
        --log 5 --log-debug-V 900
 
 # Need a bit of time for the leader to discover itself
