@@ -6,7 +6,7 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/kube"
+            "Default" : "https://raw.githubusercontent.com/chungers/examples/examples-1009/latest/kube"
         },
         "PreinstalledDockerAMI": {
             "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
@@ -41,7 +41,7 @@
         "MetadataExportTemplate" : {
             "Type" : "String",
             "Description" : "URL to configure the metadata plugin",
-            "Default" : "https://chungers.github.io/examples/latest/metadata/aws/export.ikt"
+            "Default" : "https://raw.githubusercontent.com/infrakit/examples/master/latest/metadata/aws/export.ikt"
         },
         "Infrakit" : {
             "Type" : "String",
@@ -408,7 +408,7 @@
                             "docker swarm init\n",
                             "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit ",
 			    {"Ref":"Infrakit"},
-                            " infrakit util init --group-id kube-managers --start combo --start swarm --start kubernetes ",
+                            " infrakit util init --group-id managers --start combo --start swarm --start kubernetes ",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
                                " --var /cluster/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
@@ -433,7 +433,7 @@
                     },
                     {
                         "Key" : "infrakit.group",
-                        "Value" : "kube-managers"
+                        "Value" : "managers"
                     },
                     {
                         "Key" : "infrakit.config_sha",
