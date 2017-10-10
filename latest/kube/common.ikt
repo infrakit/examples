@@ -1,0 +1,4 @@
+{{/* Var variables */}}
+
+{{ source `../swarm/common.ikt` }}
+{{ var "/cluster/kube/join/ip" "172.31.16.101" }}
