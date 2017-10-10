@@ -23,22 +23,19 @@ cat << EOF > /etc/docker/daemon.json
 }
 EOF
 kill -s HUP $(cat /var/run/docker.pid)  {{/* Reload the engine labels */}}
-sleep 5
+sleep 30
 {{ end }}
 
 echo ##### Set up Docker Swarm Mode  ##################################################
 {{ if not (var "/cluster/swarm/initialized") }}
-docker swarm init --advertise-addr {{ var "/cluster/swarm/join/ip" }}  # starts :2377
+echo ##### Initialize Swarm
+echo "Init swarm: $(docker swarm init --advertise-addr {{ var "/cluster/swarm/join/ip" }})"  # starts :2377
+{{ else }}
+echo ##### Joining Swarm
+echo "Join Swarm: $(docker swarm join --token {{ var "/local/docker/swarm/join/token" }} {{ var "/local/docker/swarm/join/addr" }})"
 {{ end }}
 
 echo ##### Infrakit Services  #########################################################
 {{ if not (var "/local/infrakit/role/worker") }}
 {{ include "infrakit.sh" }}
 {{ end }}{{/* if running infrakit */}}
-
-echo ##### Joining Swarm  #############################################################
-{{ if var "/cluster/swarm/initialized" }}
-sleep 5
-echo "Joining swarm"
-docker swarm join --token {{ var "/local/docker/swarm/join/token" }} {{ var "/local/docker/swarm/join/addr" }}
-{{ end }}

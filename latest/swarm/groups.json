@@ -16,7 +16,7 @@ the instances it manages reside.
 {{ $swarmLeaderIP := var `/cluster/swarm/join/ip` }}
 {{ $managerIPs := var `/cluster/swarm/manager/ips` }}
 
-{{ $workerSize := sub (var `/cluster/swarm/size`) (len $managerIPs) }}
+{{ $workerSize := sub (var `/cluster/size`) (len $managerIPs) }}
 {{ $dockerEngine := `unix:///var/run/docker.sock` }} {{/* for this flavor to connect to */}}
 
 {{ $managerInit := cat (var `/infrakit/config/root`) `/manager-init.sh` | nospace }}
@@ -28,7 +28,7 @@ the instances it manages reside.
     {
         "Plugin": "group",
         "Properties": {
-            "ID": "swarm-managers",
+            "ID": "managers",
             "Properties": {
                 "Allocation": {
                     "LogicalIDs": {{ $managerIPs | jsonEncode }}
@@ -62,7 +62,7 @@ the instances it manages reside.
     {
         "Plugin": "group",
         "Properties": {
-            "ID": "swarm-workers",
+            "ID": "workers",
             "Properties": {
                 "Allocation": {
                     "Size": {{ $workerSize }}

@@ -8,6 +8,14 @@ set -o xtrace
 # coupled to the AMI (host OS) used.
 EBS_DEVICE=/dev/xvdf
 
+# Check to see that we don't already have this set up
+setup=$(grep '/var/lib/docker' /etc/fstab | awk '{print $1}')
+if [ "${setup}" = "/dev/xvdf" ]; then
+    echo "Skipping setup of volumes."
+else
+
+echo "Setting up volumes"
+
 # TODO - make this more robust - loop and check.  Right now just sleeps and hope for the best.
 if [ ! -b $EBS_DEVICE ]; then
     echo "Device $EBS_DEVICE not ready. Waiting"
@@ -38,3 +46,5 @@ if [ "$stopped" -eq "1" ]; then
     echo "Starting Docker"
     service docker start
 fi
+
+fi # setup

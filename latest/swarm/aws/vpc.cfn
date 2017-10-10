@@ -38,11 +38,6 @@
             "Description" : "Private IP of the bootstrap node",
             "Default" : "172.31.16.101"
         },
-        "InfrakitConfigRoot" : {
-            "Type" : "String",
-            "Description" : "Root URL of the bootscript",
-            "Default" : "https://infrakit.github.io/examples/latest/swarm"
-        },
         "MetadataExportTemplate" : {
             "Type" : "String",
             "Description" : "URL to configure the metadata plugin",
@@ -134,10 +129,12 @@
 
         "AMISelector" : {
             "no" : {
+                "hasDocker" : "no",
                 "ami" : "AWSRegionArch2AMIUbuntu1604NoDocker",
                 "userdata" : "wget -qO- https://get.docker.com/ | sh \n"
             },
             "yes" : {
+                "hasDocker" : "yes",
                 "ami" : "AWSRegionArch2AMI",
                 "userdata" : "# Docker pre-installed \n"
             }
@@ -407,14 +404,20 @@
                             {
                                 "Fn::FindInMap": [ "AMISelector", { "Ref" : "PreinstalledDockerAMI" }, "userdata" ]
                             },
-                            "docker run --rm ", {"Ref":"Infrakit"} ," infrakit template -f ",
-                               {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
+                            "mkdir -p /infrakit\n",
+                            "docker swarm init\n",
+                            "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit ",
+			    {"Ref":"Infrakit"},
+                            " infrakit util init --group-id managers --start combo --start swarm ",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
-                               " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
+                               " --var /cluster/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
-                               " --var /provider/image/hasDocker=yes",
-                               " --var /infrakit/docker/image=", {"Ref":"Infrakit"},
+                               " --var /provider/image/hasDocker=", {
+                                       "Fn::FindInMap": ["AMISelector", { "Ref":"PreinstalledDockerAMI" }, "hasDocker"]
+                                       },
+                               " --var /infrakit/docker/image=", {"Ref":"Infrakit"}, " ",
+                               {"Ref":"InfrakitConfigRoot"}, "/groups.json",
                                " | tee /var/lib/infrakit.boot | sh \n"
                         ]]
                     }
@@ -430,7 +433,7 @@
                     },
                     {
                         "Key" : "infrakit.group",
-                        "Value" : "swarm-managers"
+                        "Value" : "managers"
                     },
                     {
                         "Key" : "infrakit.config_sha",
