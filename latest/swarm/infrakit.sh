@@ -34,7 +34,7 @@ sleep 60
 
 echo "Update the vars in the metadata plugin -- we put this in the vars plugin for queries later."
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
-       infrakit vars change -c \
+       infrakit vars metadata change -c \
        cluster/name={{ var `/cluster/name` }} \
        cluster/size={{ var `/cluster/size` }} \
        infrakit/config/root={{ var `/infrakit/config/root` }} \
