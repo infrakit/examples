@@ -31,14 +31,14 @@ docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }
        infrakit plugin start manager group vars aws combo swarm time tailer ingress kubernetes \
        --log 5 --log-debug-V 900
 
-# Need a bit of time for the leader to discover itself
-sleep 60
-
 {{ if eq (var `/local/swarm/manager/logicalID`) (var `/cluster/swarm/join/ip`) }}
 echo "Block here to demonstrate the blocking metadata and asynchronous user update... Only on first node."
 
 echo "Please enter usr/token via the CLI: $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit vars metadata cat usr/token --retry 5s --timeout 1.5h)"
 
+{{ else }}
+# Need a bit of time for the leader to discover itself
+sleep 60
 {{ end }}
 
 echo "Update the vars in the metadata plugin -- we put this in the vars plugin for queries later."
