@@ -46,10 +46,9 @@ docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
        infrakit vars metadata change -c sys/message="Thank you. Continuing..."
 
 {{ else }}
-# Need a bit of time for the leader to discover itself
-sleep 60
+# Need time for leadership to be determined.
+sleep 30
 {{ end }}
-
 
 echo "Update the vars in the metadata plugin -- we put this in the vars plugin for queries later."
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
