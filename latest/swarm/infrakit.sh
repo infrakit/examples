@@ -36,14 +36,14 @@ echo "Block here to demonstrate the blocking metadata and asynchronous user upda
 
 # For fun -- let's write a message for the remote CLI to see
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
-       infrakit vars metadata change -c sys/message="To continue, please enter usr/token using the CLI."
+       infrakit vars change -c sys/message="To continue, please enter usr/token using the CLI."
 
 echo "Please enter usr/token via the CLI"
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
-       infrakit vars metadata cat usr/token --retry 5s --timeout 1.0h
+       infrakit vars cat usr/token --retry 5s --timeout 1.0h
 
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
-       infrakit vars metadata change -c sys/message="Thank you. Continuing..."
+       infrakit vars change -c sys/message="Thank you. Continuing..."
 
 {{ else }}
 # Need time for leadership to be determined.
@@ -52,7 +52,7 @@ sleep 30
 
 echo "Update the vars in the metadata plugin -- we put this in the vars plugin for queries later."
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
-       infrakit vars metadata change -c \
+       infrakit vars change -c \
        cluster/name={{ var `/cluster/name` }} \
        cluster/size={{ var `/cluster/size` }} \
        infrakit/config/root={{ var `/infrakit/config/root` }} \
