@@ -37,7 +37,7 @@ sleep 60
 {{ if eq (var `/local/swarm/manager/logicalID`) (var `/cluster/swarm/join/ip`) }}
 echo "Block here to demonstrate the blocking metadata and asynchronous user update... Only on first node."
 
-echo "Please enter usr/token via the CLI: $(docker run --ti --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit vars metadata cat usr/token --retry 5s --timeout 1.5h)"
+echo "Please enter usr/token via the CLI: $(docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit vars metadata cat usr/token --retry 5s --timeout 1.5h)"
 
 {{ end }}
 
