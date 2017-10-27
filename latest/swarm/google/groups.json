@@ -1,0 +1,15 @@
+{{/*
+
+Google specific - This is where we introspect the environment and export the values to other templates.
+
+*/}}
+{{ source "../common.ikt" }}
+
+{{$instanceType := (fetch "http://metadata/computeMetadata/v1/instance/machine-type" "Metadata-Flavor=Google") | base }}
+
+{{ var "/local/instanceType" $instanceType }}
+
+{
+    "Managers" : {{ include "manager.json" }},
+    "Workers"  : {{ include "worker.json" }}
+}

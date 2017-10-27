@@ -8,7 +8,7 @@ set -o xtrace
 
 ##### Set up volumes #################################################################
 # Only for managers
-{{ if not (var "/local/infrakit/role/worker") }} {{ include "setup-volume.sh" }} {{ end }}
+{{ if and (not (var "/local/infrakit/role/worker")) (eq (var "/cluster/provider") "aws") }} {{ include "setup-volume.sh" }} {{ end }}
 
 echo ##### Set up Docker #############################################################
 {{ if var "/local/install/docker" }} {{ include "install-docker.sh" }} {{ end }}

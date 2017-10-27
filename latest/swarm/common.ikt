@@ -1,6 +1,5 @@
 {{/* Var variables */}}
 
-{{ var "/cluster/provider" "aws" }}
 {{ var "/cluster/swarm/join/ip" "172.31.16.101" }}
 {{ var "/cluster/swarm/manager/ips" (tuple "172.31.16.101" "172.31.16.102" "172.31.16.103") }}
 {{ if empty (var "/local/docker/engine/labels") }}{{ var "/local/docker/engine/labels" (jsonDecode "[]") }}{{end}}
@@ -12,6 +11,7 @@ in the vars metadata plugin so that the user-entered values like cluster size ca
 queried later even after the bootstrapping (cloudformation) completes.
 */}}
 {{ if metadata `vars` }}
+{{ var `/cluster/provider`            ( metadata `vars/cluster/provider` )}}
 {{ var `/cluster/name`                ( metadata `vars/cluster/name` )}}
 {{ var `/cluster/size`                ( metadata `vars/cluster/size` )}}
 {{ var `/infrakit/config/root`        ( metadata `vars/infrakit/config/root` )}}

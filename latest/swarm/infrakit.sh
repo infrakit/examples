@@ -12,7 +12,7 @@ mkdir -p {{$infrakitHome}}/plugins
 
 # Cluster {{ var `/cluster/name` }} size is {{ var `/cluster/size` }}
 
-echo "Cluster {{ var `/cluster/name` }} size is {{ var `/cluster/swarm/size` }}"
+echo "Cluster {{ var `/cluster/name` }} size is {{ var `/cluster/size` }}"
 echo "alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'" >> /root/.bashrc
 
 alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} infrakit'
@@ -20,19 +20,24 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
        -v /var/log/:/var/log \
+       \{{ if eq (var `/cluster/provider`) "aws" }}
        -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
        -e INFRAKIT_AWS_METADATA_POLL_INTERVAL=300s \
        -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
        -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
+       {{ end }}
        -e INFRAKIT_MANAGER_BACKEND=swarm \
        -e INFRAKIT_ADVERTISE={{ var `/local/swarm/manager/logicalID` }}:24864 \
        -e INFRAKIT_TAILER_PATH=/var/log/cloud-init-output.log \
        {{$dockerImage}} \
-       infrakit plugin start manager group vars aws combo swarm time tailer ingress kubernetes \
+       infrakit plugin start manager group vars combo swarm time tailer ingress kubernetes {{ var `/cluster/provider` }} \
        --log 5 --log-debug-V 900
 
 {{ if eq (var `/local/swarm/manager/logicalID`) (var `/cluster/swarm/join/ip`) }}
 echo "Block here to demonstrate the blocking metadata and asynchronous user update... Only on first node."
+
+# Need time for plugins (namely var) to load properly
+sleep 10
 
 # For fun -- let's write a message for the remote CLI to see
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
@@ -53,6 +58,7 @@ sleep 30
 echo "Update the vars in the metadata plugin -- we put this in the vars plugin for queries later."
 docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage}} \
        infrakit vars change -c \
+       cluster/provider={{ var `/cluster/provider` }} \
        cluster/name={{ var `/cluster/name` }} \
        cluster/size={{ var `/cluster/size` }} \
        infrakit/config/root={{ var `/infrakit/config/root` }} \

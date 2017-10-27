@@ -1,0 +1,79 @@
+resources:
+    - name: {{ env["deployment"] }}-bootstrap
+      type: compute.v1.instance
+      properties:
+          zone: {{ properties["zone"] }}
+          machineType: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/zones/{{ properties["zone"] }}/machineTypes/{{ properties["machineType"] }}
+          disks:
+              - type: PERSISTENT
+                boot: true
+                autoDelete: false
+                initializeParams:
+                    sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1604-xenial-v20171011
+          tags:
+              items:
+                  - http-server
+                  - https-server
+          metadata:
+              items:
+                  - key: infrakit--scope
+                    value: {{ env["deployment"] }}
+                  - key: infrakit--group
+                    value: managers
+                  - key: infrakit--role
+                    value: managers
+                  - key: infrakit--config_sha
+                    value: bootstrap
+                  - key: infrakit-logical-id
+                    value: {{ properties["bootstrapIP"] }}
+                  - key: infrakit-gcp-version
+                    value: 1
+                  - key: startup-script
+                    value: |
+                        #!/bin/sh
+                        wget -qO- https://get.docker.com/ | sh
+                        mkdir -p /infrakit
+                        docker swarm init
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit \
+                        {{ properties["image"] }} \
+                        infrakit util init --group-id managers --start combo --start swarm \
+                        --var /cluster/provider=google \
+                        --var /cluster/name={{ env["deployment" ] }} \
+                        --var /cluster/size={{ properties["clusterSize"] }} \
+                        --var /infrakit/config/root={{ properties["configRoot"] }} \
+                        --var /infrakit/metadata/configURL={{ properties["configURL"] }} \
+                        --var /provider/image/hasDocker=no \
+                        --var /infrakit/docker/image={{ properties["image"] }} \
+                        {{ properties["configRoot"] }}/groups.json \
+                        | tee /var/lib/infrakit.boot | sh
+          networkInterfaces:
+              - network: $(ref.{{ env["deployment"] }}-network.selfLink)
+                networkIP: {{ properties["boostrapIP"] }}
+                accessConfigs:
+                 - type: ONE_TO_ONE_NAT
+                   name: External NAT
+          serviceAccounts:
+              - scopes:
+                    - https://www.googleapis.com/auth/cloud-platform
+                    - https://www.googleapis.com/auth/compute
+                    - https://www.googleapis.com/auth/servicecontrol
+                    - https://www.googleapis.com/auth/service.management.readonly
+                    - https://www.googleapis.com/auth/logging.write
+                    - https://www.googleapis.com/auth/monitoring.write
+                    - https://www.googleapis.com/auth/trace.append
+                    - https://www.googleapis.com/auth/devstorage.read_only
+                    - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+    - name: {{ env["deployment"] }}-network
+      type: compute.v1.network
+      properties:
+          IPv4Range: 172.31.16.0/20
+    - name: {{ env["deployment"] }}-firewall
+      type: compute.v1.firewall
+      properties:
+          allowed:
+              - IPProtocol: tcp
+                ports:
+                    - 22
+                    - 65535
+                    - 24864
+          network: $(ref.{{ env["deployment"] }}-network.selfLink)

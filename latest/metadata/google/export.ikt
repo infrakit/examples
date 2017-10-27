@@ -1,0 +1,14 @@
+{{/*
+
+Google specific - This is where we introspect the environment and export the values to other templates.
+
+*/}}
+
+{{ $instanceType := (fetch "http://metadata/computeMetadata/v1/instance/machine-type" "Metadata-Flavor=Google") | base }}
+
+{{/* export them values here as metadata */}}
+{{ export "local/instanceType" $instanceType }}
+
+{{ $cfn := cfn stackName }}
+{{ export "cfn/stack" stackName }}
+{{ export "cfn/config" $cfn }}

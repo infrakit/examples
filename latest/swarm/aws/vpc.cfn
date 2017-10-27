@@ -409,6 +409,7 @@
                             "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /infrakit:/infrakit ",
 			    {"Ref":"Infrakit"},
                             " infrakit util init --group-id managers --start combo --start swarm ",
+                               " --var /cluster/provider=aws",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
                                " --var /cluster/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},

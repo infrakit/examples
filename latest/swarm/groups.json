@@ -16,6 +16,7 @@ the instances it manages reside.
 {{ $swarmLeaderIP := var `/cluster/swarm/join/ip` }}
 {{ $managerIPs := var `/cluster/swarm/manager/ips` }}
 
+{{ $prov := (var `/cluster/provider`) }}
 {{ $workerSize := sub (var `/cluster/size`) (len $managerIPs) }}
 {{ $dockerEngine := `unix:///var/run/docker.sock` }} {{/* for this flavor to connect to */}}
 

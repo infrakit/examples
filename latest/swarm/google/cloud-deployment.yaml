@@ -1,0 +1,14 @@
+imports:
+    - path: deploy-template.jinja
+
+resources:
+    - name: deploy
+      type: deploy-template.jinja
+      properties:
+          zone: us-east1-b
+          machineType: f1-micro
+          bootstrapIP: 172.31.16.101
+          clusterSize: 5
+          image: infrakit/devbundle:latest
+          configRoot: https://raw.githubusercontent.com/wongwill86/examples/google/latest/swarm/
+          configURL: https://raw.githubusercontent.com/wongwill86/examples/google/latest/metadata/google/export.ikt
